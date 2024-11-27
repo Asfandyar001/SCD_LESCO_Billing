@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Bill-Manager.iml" filepath="$PROJECT_DIR$/Bill-Manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SCD_LESCO_BILLING.iml" filepath="$PROJECT_DIR$/SCD_LESCO_BILLING.iml" />
     </modules>
   </component>
 </project>

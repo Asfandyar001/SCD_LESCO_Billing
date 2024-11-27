@@ -1,3 +1,7 @@
+package src;
+
+import GUI.Emp_TaxesInfo;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;

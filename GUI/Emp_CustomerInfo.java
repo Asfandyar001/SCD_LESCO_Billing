@@ -1,3 +1,7 @@
+package GUI;
+
+import src.Customer;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

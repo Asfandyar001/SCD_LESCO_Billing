@@ -1,3 +1,7 @@
+package GUI;
+
+import src.Billing;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

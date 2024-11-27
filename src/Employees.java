@@ -1,3 +1,7 @@
+package src;
+
+import GUI.Emp_Update_Password;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ public class Employees
         return false;
     }
 
-    public String updateMenu(String username, String oldPass,Emp_Update_Password updatePassword)
+    public String updateMenu(String username, String oldPass, Emp_Update_Password updatePassword)
     {
         String inName = updatePassword.getUserName();
         String inPass = updatePassword.getOld();
