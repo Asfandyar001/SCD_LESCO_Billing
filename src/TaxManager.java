@@ -1,6 +1,7 @@
 package src;
 
 import GUI.Emp_TaxesInfo;
+import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -11,6 +12,8 @@ public class TaxManager {
     private String filename = "TariffTaxInfo.txt";
 
     public ArrayList<String> getData(){
+      return  DataBaseHandler.getData();
+      /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(filename))){
             String line;
@@ -21,6 +24,8 @@ public class TaxManager {
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+       */
     }
 
     public boolean updateTaxMenu(int lineCount, Emp_TaxesInfo taxesInfo)
@@ -52,8 +57,11 @@ public class TaxManager {
 
     public void performTaxChanges(int row, String value)
     {
+        DataBaseHandler.performTaxChanges(row,value);
+/*
         ArrayList<String> list = getData();
 
+        System.out.println(row+" "+value);
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(filename))){
             for(int i=0; i< list.size(); i++) {
                 if (i+1 == row) {
@@ -67,6 +75,8 @@ public class TaxManager {
         }catch (IOException e){
             System.out.println("Error: " + e.getMessage());
         }
+         */
+
     }
 
     public boolean isDigits(String str)
@@ -82,5 +92,7 @@ public class TaxManager {
             }
         }
         return true;
+
+
     }
 }

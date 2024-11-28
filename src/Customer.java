@@ -18,9 +18,9 @@ import java.util.Random;
 
 public class Customer
 {
-    private String custFilename = "CustomerInfo.txt";
-    private String billFilename = "BillingInfo.txt";
-    private String tariffFilename = "TariffTaxInfo.txt";
+    //private String custFilename = "CustomerInfo.txt";
+    //private String billFilename = "BillingInfo.txt";
+    //private String tariffFilename = "TariffTaxInfo.txt";
     private String[] custInfo;
     private String[] billInfo = new String[]{"Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found"};
     private String[] tariffInfo;

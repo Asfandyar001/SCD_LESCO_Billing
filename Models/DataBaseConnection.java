@@ -12,7 +12,7 @@ public class DataBaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:sqlserver://103.31.104.114:1433;databaseName=SCD_Assignment;user=SCD_User;password=12345678;encrypt=true;trustServerCertificate=true;");
+        Connection con = DriverManager.getConnection(JDBC_URL);
         return con;
     }
 }

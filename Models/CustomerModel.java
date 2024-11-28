@@ -280,69 +280,20 @@ public class CustomerModel {
 
         try {
             Connection conn = DataBaseConnection.getConnection();
+            Statement stmt = conn.createStatement();
 
-            try {
-                Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
 
-                try {
-                    ResultSet rs = stmt.executeQuery(query);
-
-                    try {
                         while(rs.next()) {
                             String cnic = rs.getString("UniqueCode");
                             String name = rs.getString("IssueDate");
                             String expiryDate = rs.getString("ExpiryDate");
                             list.add(cnic + "," + name + "," + expiryDate);
                         }
-                    } catch (Throwable var11) {
-                        if (rs != null) {
-                            try {
-                                rs.close();
-                            } catch (Throwable var10) {
-                                var11.addSuppressed(var10);
-                            }
-                        }
-
-                        throw var11;
-                    }
-
-                    if (rs != null) {
-                        rs.close();
-                    }
-                } catch (Throwable var12) {
-                    if (stmt != null) {
-                        try {
-                            stmt.close();
-                        } catch (Throwable var9) {
-                            var12.addSuppressed(var9);
-                        }
-                    }
-
-                    throw var12;
-                }
-
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (Throwable var13) {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (Throwable var8) {
-                        var13.addSuppressed(var8);
-                    }
-                }
-
-                throw var13;
-            }
-
-            if (conn != null) {
-                conn.close();
-            }
-        } catch (SQLException var14) {
-            SQLException e = var14;
+                    }catch (SQLException e) {
             System.out.println("Error while retrieving all CNICs: " + e.getMessage());
-        }
+                }
+
 
         return list;
     }
@@ -473,7 +424,7 @@ public class CustomerModel {
 
             stmt.setString(1, id);
 
-            int rowsDeleted = stmt.executeUpdate();
+           stmt.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();

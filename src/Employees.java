@@ -1,6 +1,7 @@
 package src;
 
 import GUI.Emp_Update_Password;
+import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -10,10 +11,12 @@ import java.util.Scanner;
 
 public class Employees
 {
-    String filename = "EmployeesData.txt";
+    //String filename = "EmployeesData.txt";
 
     public boolean validateEmployee(String username, String pass)
     {
+        return DataBaseHandler.validateEmployee(username,pass);
+        /*
         try {
             FileReader fr = new FileReader(filename);
             BufferedReader br = new BufferedReader(fr);
@@ -36,6 +39,7 @@ public class Employees
         }
 
         return false;
+         */
     }
 
     public String updateMenu(String username, String oldPass, Emp_Update_Password updatePassword)
@@ -66,6 +70,8 @@ public class Employees
 
     void updatePass(String username, String newPass)
     {
+         DataBaseHandler.updateEmployeePassword(username,newPass);
+        /*
         ArrayList<String> data = new ArrayList<>();
         try {
             FileReader fr = new FileReader(filename);
@@ -104,5 +110,7 @@ public class Employees
         {
             System.out.println("Error: File Writing");
         }
+
+         */
     }
 }

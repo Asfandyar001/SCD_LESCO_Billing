@@ -4,6 +4,7 @@ import GUI.Emp_Change_Bill_Status;
 import GUI.Emp_ViewBill_NoBill;
 import GUI.Emp_View_Report;
 import GUI.frame;
+import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -58,13 +59,13 @@ public class Billing
         LocalDate now = LocalDate.parse(readingEntryDate,formatter);
         int current_year = now.getYear();
 
-        try(BufferedReader br = new BufferedReader(new FileReader(billFilename)))
-        {
-            while((line=br.readLine())!=null)
-            {
-                data = line.split(",");
+        ArrayList<String> Bills=DataBaseHandler.getBillforAdd();
+                for(int i=0;i<Bills.size();i++){
+                data = Bills.get(i).split(",");
+
                 if(data[0].equals(custID) && data[1].equals(billingMonth))
                 {
+
                     LocalDate fileDate = LocalDate.parse(data[4],formatter);
                     int billYear = fileDate.getYear();
                     if(billYear == current_year) {
@@ -72,10 +73,7 @@ public class Billing
                         return false;
                     }
                 }
-            }
-        }catch(IOException e){
-            System.out.println("Error: " + e.getMessage());
-        }
+                }
 
 
             if(!currentMeterReading.equals("0")  && isDigits(currentMeterReading))
@@ -140,11 +138,14 @@ public class Billing
         float fixedCharges = Float.parseFloat(tax[4]);
         float totalBillingAmount = costOfElectricity + salesTaxAmount + fixedCharges;
 
-        String billData = custID + "," + billingMonth + "," + currentMeterReading + "," + currentMeterReadingPeak + "," + readingEntryDate + "," + costOfElectricity + "," + salesTaxAmount + "," + fixedCharges + "," + totalBillingAmount + "," + dueDate + "," + paidStatus + "," + paymentDate;
-        appendFile(billFilename,billData);
+        //String billData = custID + "," + billingMonth + "," + currentMeterReading + "," + currentMeterReadingPeak + "," + readingEntryDate + "," + costOfElectricity + "," + salesTaxAmount + "," + fixedCharges + "," + totalBillingAmount + "," + dueDate + "," + paidStatus + "," + paymentDate;
+        DataBaseHandler.addBill(Integer.parseInt(custID),billingMonth,currentMeterReading,currentMeterReadingPeak,readingEntryDate,costOfElectricity, salesTaxAmount,fixedCharges,dueDate,paidStatus,paymentDate);
+       // appendFile(billFilename,billData);
         return true;
     }
     public ArrayList<String> viewAllBills(){
+        return DataBaseHandler.getBillforAdd();
+        /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
             String line;
@@ -155,8 +156,13 @@ public class Billing
             System.out.println(e.getMessage());
         }
         return list;
+
+         */
     }
     public ArrayList<String> viewSearchedBills(String search){
+
+        return DataBaseHandler.viewSearchedBills(search);
+        /*
         ArrayList<String> list = new ArrayList<>();
         String line;
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
@@ -176,8 +182,12 @@ public class Billing
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+         */
     }
     public void deleteBill(String id, String month, String eDate){
+        DataBaseHandler.deleteBill(id,month,eDate);
+        /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
             String line;
@@ -206,17 +216,25 @@ public class Billing
         {
             System.out.println("Error while writing to File: " + e.getMessage());
         }
+
+         */
     }
     public boolean isAccessAble(String id,String month, String eDate){
-        ArrayList<String> list = new ArrayList<>();
+
+       return DataBaseHandler.isAccessAble(id,month,eDate);
+/*
+        System.out.println("New stuff");
+        list = new ArrayList<>();
 
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
             String line;
             while((line=br.readLine())!=null){
+
                 String[] data = line.split(",");
 
                 if(data[0].equals(id)){
                     list.add(line);
+                    System.out.println(line);
                 }
             }
         }catch(IOException e){
@@ -225,13 +243,17 @@ public class Billing
 
         String last_Index = list.getLast();
         String[] data = last_Index.split(",");
-
+        System.out.println(id);
+        System.out.println(data[1]);
+        System.out.println();
         if(data[0].equals(id) && data[1].equals(month) && data[4].equals(eDate)){
             return true;
         }
         else{
             return false;
         }
+
+ */
     }
     public boolean isValidEdit(String row){
         String[] data = row.split(",");
@@ -307,7 +329,9 @@ public class Billing
         }
 
         String fix = data[0] + "," + data[1] + "," +data[2] + "," +data[3] + "," +data[4] + "," +data[5] + "," +data[6] + "," +data[7] + "," +data[8] + "," +data[9] + "," +data[10] + "," +data[11];
+        DataBaseHandler.editBill(fix);
 
+        /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
             String line;
@@ -326,10 +350,14 @@ public class Billing
         }
 
         writeFile(list,billFilename);
+
+         */
     }
 
     public boolean changePaidStatus(Emp_Change_Bill_Status changeStatus)
     {
+
+
         String custID = changeStatus.getCustID();
         String billingMonth = changeStatus.getBillingMonth();
 
@@ -370,6 +398,20 @@ public class Billing
         String line;
         String[] data;
         boolean found = false;
+
+        ArrayList<String> list=DataBaseHandler.getBillforAdd();
+        for(int i=0;i<list.size();i++) {
+            data =list.get(i).split(",");
+            if (data[0].equals(custID) && data[1].equals(billingMonth) && data[4].equals(entryDate)) {
+                System.out.println("True");
+                readingEntryDate = data[4];
+                RUC = data[2];
+                PHUC = data[3];
+                status = data[10];
+                found = true;
+            }
+        }
+/*
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
             while((line = br.readLine())!=null)
             {
@@ -386,6 +428,8 @@ public class Billing
         }catch (IOException e){
             System.out.println("Error Reading File: " + e.getMessage());
         }
+
+ */
 
         if(!found)
         {
@@ -415,6 +459,9 @@ public class Billing
             return false;
         }
 
+
+        DataBaseHandler.changePaidstatus(paymentDate,custID,billingMonth,entryDate);
+/*
         ArrayList<String> array = new ArrayList<>();
         try {
             FileReader fr = new FileReader(billFilename);
@@ -439,14 +486,18 @@ public class Billing
             System.out.println("Error: File Reading: " + e.getMessage());
         }
 
+
         writeFile(array,billFilename);
 
+ */
         updateCustomerFile(custID,RUC,PHUC);
         return true;
     }
 
     public void updateCustomerFile(String custID, String RUC, String PHUC)
     {
+        DataBaseHandler.updateCustomerFile(custID,RUC,PHUC);
+        /*
         ArrayList<String> array = new ArrayList<>();
         try {
             FileReader fr = new FileReader(custFilename);
@@ -472,9 +523,10 @@ public class Billing
             System.out.println("Error: File Reading: " + e.getMessage());
         }
 
-        writeFile(array,custFilename);
+        writeFile(array,custFilename);*/
     }
-
+    //no need
+    /*
     public void writeFile(ArrayList<String> array, String filename)
     {
         try {
@@ -504,81 +556,57 @@ public class Billing
         }
     }
 
+     */
+
     public String[] getTaxData(String custType, String phase)
     {
         String[] data = new String[]{""};
-        try(BufferedReader br = new BufferedReader(new FileReader(taxFilename))){
+        String[]records= DataBaseHandler.getTax();
+        String line1 = records[0];
+        String line2 = records[1];
+        String line3 = records[2];
+        String line4 = records[3];
 
-            String line1 = br.readLine();
-            String line2 = br.readLine();
-            String line3 = br.readLine();
-            String line4 = br.readLine();
 
-            if((custType.equals("D") || custType.equals("d")) && (phase.equals("s") || phase.equals("S")))
-            {
-                data = line1.split(",");
-            }
-            else if((custType.equals("c") || custType.equals("C")) && (phase.equals("s") || phase.equals("S")))
-            {
-                data = line2.split(",");
-            }
-            else if((custType.equals("d") || custType.equals("D")) && (phase.equals("t") || phase.equals("T")))
-            {
-                data = line3.split(",");
-            }
-            else if((custType.equals("c") || custType.equals("C")) && (phase.equals("t") || phase.equals("T")))
-            {
-                data = line4.split(",");
-            }
-        }catch (IOException e)
+        if((custType.equals("D") || custType.equals("d")) && (phase.equals("s") || phase.equals("S")))
         {
-            System.out.println("Error Reading Tax File");
+            data = line1.split(",");
+        }
+        else if((custType.equals("c") || custType.equals("C")) && (phase.equals("s") || phase.equals("S")))
+        {
+            data = line2.split(",");
+        }
+        else if((custType.equals("d") || custType.equals("D")) && (phase.equals("t") || phase.equals("T")))
+        {
+            data = line3.split(",");
+        }
+        else if((custType.equals("c") || custType.equals("C")) && (phase.equals("t") || phase.equals("T")))
+        {
+            data = line4.split(",");
         }
         return data;
     }
 
     public boolean validateCustomerID(String id)
     {
-        try {
-            FileReader fr = new FileReader(custFilename);
-            BufferedReader br = new BufferedReader(fr);
+        String[] array= DataBaseHandler.getCustomer(id);
 
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] index = line.split(",");
-                if (index[0].equals(id)) {
-                    arrayList = index;
+        if (array[0].equals(id)) {
+                    arrayList = array;
                     return true;
                 }
-            }
-        }
-        catch(IOException e)
-        {
-            System.out.println("Error File Reading: " + e.getMessage());
-        }
-
         return false;
+
+
     }
 
     public boolean validateCustomerIDfromBillFile(String id,String month,String date)
     {
-        try {
-            FileReader fr = new FileReader(billFilename);
-            BufferedReader br = new BufferedReader(fr);
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] index = line.split(",");
+                String[] index = DataBaseHandler.getBill(id,month,date);
                 if (index[0].equals(id) && index[1].equals(month) && index[4].equals(date)) {
                     billList = index;
                     return true;
                 }
-            }
-        }
-        catch(IOException e)
-        {
-            System.out.println("Error File Reading: " + e.getMessage());
-        }
 
         return false;
     }
@@ -628,25 +656,17 @@ public class Billing
         float sum_unpaid=0;
         String line;
         String[] data;
+        ArrayList<String> list=DataBaseHandler.getBillforAdd();
 
-        try(BufferedReader br = new BufferedReader(new FileReader(billFilename)))
-        {
-            while ((line=br.readLine())!=null)
-            {
-                data=line.split(",");
-                if(data[10].equals("Paid"))
-                {
-                    sum_paid = sum_paid + Float.parseFloat(data[8]);
-                }
-                else if(data[10].equals("UnPaid"))
-                {
-                    sum_unpaid = sum_unpaid + Float.parseFloat(data[8]);
-                }
-            }
-        }catch (IOException e){
-            System.out.println("Error: " + e.getMessage());
-        }
+      for(int i=0;i< list.size();i++) {
+          data = list.get(i).split(",");
+          if (data[10].equals("Paid")) {
+              sum_paid = sum_paid + Float.parseFloat(data[8]);
+          } else if (data[10].equals("UnPaid")) {
+              sum_unpaid = sum_unpaid + Float.parseFloat(data[8]);
+          }
 
+      }
         viewReport.setValues(String.valueOf(sum_paid), String.valueOf(sum_unpaid));
     }
 
