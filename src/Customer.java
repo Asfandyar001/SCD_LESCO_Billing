@@ -5,6 +5,8 @@ import GUI.Cust_CNIC_Not_Updated;
 import GUI.Cust_CNIC_Updated;
 import GUI.frame;
 import GUI.Cust_Bill_Found;
+import Models.DataBaseHandler;
+
 import javax.swing.*;
 import java.io.*;
 import java.time.LocalDate;
@@ -27,23 +29,19 @@ public class Customer
 
     public boolean isCustomerValid(String id, String cnic)
     {
-        boolean valid = false;
-        try(BufferedReader br = new BufferedReader(new FileReader(custFilename))){
-            String line;
-            while ((line=br.readLine())!=null){
-                String[] data = line.split(",");
-                if(data[0].equals(id) && data[1].equals(cnic)){
+
+
+                boolean valid = false;
+                if(DataBaseHandler.isCustomerValid(id,cnic)){
+                   String[]data= DataBaseHandler.getCustomer(id);
                     valid=true;
                     userName = data[2];
-                    break;
+
                 }
-            }
-        }catch (IOException e)
-        {
-            System.out.println("Error: " + e.getMessage());
-        }
 
         return valid;
+
+
     }
 
     public String getUserName()
@@ -216,6 +214,8 @@ public class Customer
         }
 
         String data = id + "," + cnic + "," + name + "," + address + "," + phone + "," + custType + "," + meterType + "," + date + "," + RUC + "," + PHUC;
+        DataBaseHandler.addCustomer(id,cnic,name,address,phone,custType,meterType,date,RUC,PHUC);
+        /*
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(custFilename,true))) {
             bw.write(data);
             bw.newLine();
@@ -224,65 +224,42 @@ public class Customer
         {
             System.out.println("Error while writing to File: " + e.getMessage());
         }
+
+         */
         return true;
+
+
     }
 
     public boolean validateCustomer(String id, String cnic, String month, int year)
     {
-        boolean valid = false;
-        try {
-            FileReader fr = new FileReader(custFilename);
-            BufferedReader br = new BufferedReader(fr);
+        boolean valid= false;
+        DataBaseHandler.validateCustomer(id,cnic,month,year);
 
-            String line;
 
-            while ((line = br.readLine()) != null) {
-                String[] idCnic = line.split(",");
-                if(idCnic[0].equals(id) && idCnic[1].equals(cnic))
-                {
-                    custInfo = idCnic;
-                    getTaxData(idCnic[5],idCnic[6]);
-                    valid = true;
-                }
-            }
-            fr.close();
-            br.close();
-        }
-        catch(IOException e)
+        if(DataBaseHandler.validateCustomer(id,cnic,month,year))
         {
-            System.out.println("Error: File Reading: " + e.getMessage());
+            custInfo = DataBaseHandler.getCustomer(id);;
+            getTaxData(custInfo[5],custInfo[6]);
+            valid = true;
         }
+
         billInfo = new String[]{"Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found"};
         if(valid)
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
-                String line;
-                String[] data;
-                while((line=br.readLine())!=null){
-                    data = line.split(",");
-                    if(data[0].equals(id) && data[1].equals(month)){
-                        LocalDate date = LocalDate.parse(data[4],formatter);
-                        int fileYear = date.getYear();
-                        if(fileYear==year)
-                        {
-                            billInfo=data;
-                            break;
-                        }
-                    }
-                }
-            }catch (IOException e){
-                System.out.println("Error:" + e.getMessage());
-            }
+                String[] data=DataBaseHandler.getBill(id,String.valueOf(year));
+                billInfo=data;
             return true;
         }
 
         return false;
+
     }
 
     public boolean updateCNIC(String id, String cnic, String newDate)
     {
-            if(isDigits(id) && isDigits(cnic) && searchNadraFile(cnic) && isCustomerValid(id,cnic))
+            if(isDigits(id) && isDigits(cnic) && searchNadraFile(cnic) && DataBaseHandler.isCustomerValid(id,cnic))
             {
             }
             else{
@@ -306,39 +283,13 @@ public class Customer
                 JOptionPane.showMessageDialog(null,"Invalid Date : Try Again","Error",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-
-        ArrayList<String> array = new ArrayList<>();
-        String line;
-        String[] data;
-        try(BufferedReader br = new BufferedReader(new FileReader("NADRADBfile.txt"))){
-            while((line= br.readLine())!=null){
-                data = line.split(",");
-                if(data[0].equals(cnic))
-                {
-                    array.add(data[0]+","+data[1]+","+newDate);
-                }
-                else{
-                    array.add(line);
-                }
-            }
-        }catch (IOException e){
-            System.out.println("Error: " + e.getMessage());
-        }
-
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter("NADRADBfile.txt"))){
-            String line2;
-            for(int i=0;i<array.size();i++)
-            {
-                bw.write(array.get(i));
-                bw.newLine();
-            }
-        }catch (IOException e){
-            System.out.println("Error: " + e.getMessage());
-        }
-        return true;
+        System.out.println("Worked till");
+     return DataBaseHandler.updateExpiryDate(cnic,newDate);
     }
     public ArrayList<String> viewExpireCnic()
     {
+       return DataBaseHandler.viewExpireCnic();
+        /*
         LocalDate today = LocalDate.now();
         LocalDate expiry;
         long daysInBetween;
@@ -363,10 +314,14 @@ public class Customer
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+         */
     }
 
     public ArrayList<String> viewAllCnic()
     {
+        return DataBaseHandler.viewAllCnic();
+        /*
         ArrayList<String> list = new ArrayList<>();
         String line;
         String[] data;
@@ -379,14 +334,20 @@ public class Customer
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+         */
     }
 
     public ArrayList<String> viewSearchCNIC(String search)
     {
+
+        return DataBaseHandler.viewSearchCnic(search);
+        /*
         ArrayList<String> list = new ArrayList<>();
 
         String line;
         String[] data;
+
         try(BufferedReader br = new BufferedReader(new FileReader("NADRADBfile.txt"))){
             while((line=br.readLine())!=null){
                 data = line.split(",");
@@ -403,10 +364,17 @@ public class Customer
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+         */
     }
 
     public ArrayList<String> viewAllCustomers()
     {
+       ArrayList<String> list= DataBaseHandler.viewAllCustomers();
+        return list;
+/*
+
+
         ArrayList<String> list = new ArrayList<>();
         String line;
         try(BufferedReader br = new BufferedReader(new FileReader("CustomerInfo.txt"))){
@@ -417,9 +385,16 @@ public class Customer
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+        */
+
+
+
+
     }
     public ArrayList<String> viewSearchCustomer(String search){
-        ArrayList<String> list = new ArrayList<>();
+
+      return  DataBaseHandler.viewSearchCustomer(search);
+      /*  ArrayList<String> list = new ArrayList<>();
 
         if(search.equals("Domestic")){
             search = "D";
@@ -449,33 +424,13 @@ public class Customer
             System.out.println("Error: " + e.getMessage());
         }
         return list;
+
+       */
     }
     public void deleteCustomer(String id){
-        ArrayList<String> list = new ArrayList<>();
 
-        try(BufferedReader br = new BufferedReader(new FileReader(custFilename))){
-            String line;
-            while((line = br.readLine())!=null){
-                String[] data = line.split(",");
-                if(!data[0].equals(id)){
-                    list.add(line);
-                }
-            }
-        }catch (IOException e){
-            System.out.println("Reader: " + e.getMessage() );
-        }
+        DataBaseHandler.deleteCustomer(id);
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(custFilename))) {
-            for(int i=0; i< list.size(); i++)
-            {
-                bw.write(list.get(i));
-                bw.newLine();
-            }
-        }
-        catch(IOException e)
-        {
-            System.out.println("Error while writing to File: " + e.getMessage());
-        }
     }
     public boolean isVlaidEdit(String str){
         String[] data = str.split(",");
@@ -509,6 +464,8 @@ public class Customer
 
         String[] data = editedString.split(",");
 
+        DataBaseHandler.editCustomer(editedString);
+/*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(custFilename))){
             String line;
@@ -556,10 +513,14 @@ public class Customer
         }catch(IOException e){
             System.out.println(e.getMessage());
         }
+
+ */
     }
 
     public int cnic_count(String cnic)
     {
+        return DataBaseHandler.cnic_count(cnic);
+       /*
         String line="";
         int count=0;
         String[] data;
@@ -576,27 +537,20 @@ public class Customer
             System.out.println("Error while reading file: " + e.getMessage());
         }
         return count;
+
+        */
     }
 
     public boolean searchNadraFile(String cnic)
     {
-        String line;
-        String[] data;
-        try(BufferedReader br = new BufferedReader(new FileReader("NADRADBfile.txt")))
-        {
-            while((line= br.readLine())!=null)
-            {
-                data = line.split(",");
-                if(data[0].equals(cnic))
+                if(DataBaseHandler.searchNadraFile(cnic))
                 {
-                    nadraInfo=data;
+                    nadraInfo=DataBaseHandler.getNadra(cnic);
                     return true;
                 }
-            }
-        }catch (IOException e) {
-            System.out.println("Error while reading : " + e.getMessage());
-        }
+        System.out.println("failed search");
         return false;
+
     }
 
     public ArrayList<String> viewBill()
@@ -652,12 +606,13 @@ public class Customer
     }
     public void getTaxData(String custType, String phase)
     {
-        try(BufferedReader br = new BufferedReader(new FileReader(tariffFilename))){
 
-            String line1 = br.readLine();
-            String line2 = br.readLine();
-            String line3 = br.readLine();
-            String line4 = br.readLine();
+            String[]records=DataBaseHandler.getTax();
+            String line1 = records[0];
+            String line2 = records[1];
+            String line3 = records[2];
+            String line4 = records[3];
+
 
             if((custType.equals("D") || custType.equals("d")) && (phase.equals("s") || phase.equals("S")))
             {
@@ -675,10 +630,7 @@ public class Customer
             {
                 tariffInfo = line4.split(",");
             }
-        }catch (IOException e)
-        {
-            System.out.println("Error Reading Tax File");
-        }
+
     }
     public boolean isAlphabets(String str)
     {
@@ -700,10 +652,14 @@ public class Customer
                 return false;
             }
         }
+
         return true;
     }
     public boolean isUnique(String str, int index)
     {
+       return DataBaseHandler.isUnique(str,index);
+
+       /*
         try {
             FileReader fr = new FileReader(custFilename);
             BufferedReader br = new BufferedReader(fr);
@@ -723,5 +679,7 @@ public class Customer
             System.out.println("Reading Error: " + e.getMessage());
         }
         return true;
+
+        */
     }
 }

@@ -379,7 +379,7 @@ public class Emp_CustomerInfo extends JPanel{
             phone.setFocusable(false);
 
             String strC;
-            if(data[5].equals("C")){
+            if(data[5].trim().equalsIgnoreCase("C")){
                 strC="Commercial";
             }
             else{
@@ -396,7 +396,7 @@ public class Emp_CustomerInfo extends JPanel{
             cType.setFocusable(false);
 
             String strM;
-            if(data[6].equals("S"))
+            if(data[6].trim().equalsIgnoreCase("S"))
             {
                 strM="1-Phase";
             }
@@ -435,7 +435,7 @@ public class Emp_CustomerInfo extends JPanel{
             ruc.setFocusable(false);
 
             String str_phuc = data[9];
-            if(data[9].equals("not_supported")){
+            if(data[9].trim().equalsIgnoreCase("not_supported")){
                 str_phuc = " ";
             }
             JTextField phuc = new JTextField();
