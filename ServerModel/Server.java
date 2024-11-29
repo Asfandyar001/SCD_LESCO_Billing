@@ -15,8 +15,10 @@ public class Server {
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
+            System.out.println("Server is running");
             while (true) {
                 Socket socket = serverSocket.accept();
+                System.out.println("New Device Connected");
                 new HandleRequest(socket).start();
 
             }

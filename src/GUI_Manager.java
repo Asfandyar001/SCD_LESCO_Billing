@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 public class GUI_Manager
 {
@@ -43,11 +44,15 @@ public class GUI_Manager
             f.replacePanel(emp.getPanel(), cust.getPanel());
         });
         emp.getLoginButton().addActionListener(eListen -> {
-            if (obj_e.validateEmployee(emp.getUserName(), emp.getPass())) {
-                String[] pass= new String[]{emp.getPass()};
-                EmpOptionMenu(f,obj_e, emp.getUserName(), pass,emp);
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (obj_e.validateEmployee(emp.getUserName(), emp.getPass())) {
+                    String[] pass= new String[]{emp.getPass()};
+                    EmpOptionMenu(f,obj_e, emp.getUserName(), pass,emp);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect Username or Password", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
 

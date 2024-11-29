@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
+import Models.DataBaseHandler;
 import org.json.JSONObject;
 
 
@@ -13,7 +15,7 @@ public class HandleRequest extends Thread {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-    private Object reponse;
+    private Object response;
 
     public HandleRequest(Socket socket) throws IOException {
         this.socket = socket;
@@ -75,7 +77,11 @@ public class HandleRequest extends Thread {
                     function.equalsIgnoreCase("updatePass")) {
 
                 synchronized (Server.employeesInfo) {
-                    // Add your logic here
+
+                    if(function.equalsIgnoreCase("validateEmployee")){
+                      response=  DataBaseHandler.validateEmployee(jsonRequest.getString("username"),jsonRequest.getString("pass"));
+
+                    }
                 }
             } else if (function.equalsIgnoreCase("getData") || function.equalsIgnoreCase("updateTaxMenu") ||
                     function.equalsIgnoreCase("performTaxChanges")) {
@@ -84,17 +90,17 @@ public class HandleRequest extends Thread {
                     // Add your logic here
                 }
             }
-            output.println(reponse.toString());
+            output.println(response.toString());
         } catch (Exception e) {
             e.printStackTrace();  // Handle parsing errors or unknown functions
         }
     }
 
-    public Object getReponse() {
-        return reponse;
+    public Object getResponse() {
+        return response;
     }
 
-    public void setReponse(Object reponse) {
-        this.reponse = reponse;
+    public void setResponse(Object response) {
+        this.response = response;
     }
 }

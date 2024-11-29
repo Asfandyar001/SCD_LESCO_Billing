@@ -13,16 +13,17 @@ public class Client {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-
-    private Client(String IPAddress, int port) throws IOException {
-        socket = new Socket(IPAddress, port);
+final private String IPAddress="localHost";
+final private int port=1234    ;
+    private Client() throws IOException {
+        socket = new Socket(IPAddress,port);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public static Client getInstance(String IPAddress, int port) throws IOException {
+    public static Client getInstance() throws IOException {
         if (client == null) {
-            client = new Client(IPAddress, port);
+            client = new Client();
         }
         return client;
     }
@@ -42,6 +43,16 @@ public class Client {
 
         String response = getResponse();
         return Boolean.parseBoolean(response);   }
+    public boolean validateEmployee(String employeeId, String password) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "validateEmployee");
+        object.put("username", employeeId);
+        object.put("pass", password);
+        output.println(object.toString());
+
+        String response = getResponse();
+        return Boolean.parseBoolean(response);   }
+
 
 
     public ArrayList<String> viewAllBills() throws IOException {

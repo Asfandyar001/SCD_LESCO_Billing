@@ -13,9 +13,8 @@ public class Employees
 {
     //String filename = "EmployeesData.txt";
 
-    public boolean validateEmployee(String username, String pass)
-    {
-        return DataBaseHandler.validateEmployee(username,pass);
+    public boolean validateEmployee(String username, String pass) throws IOException {
+        return Client.getInstance().validateEmployee(username,pass);
         /*
         try {
             FileReader fr = new FileReader(filename);

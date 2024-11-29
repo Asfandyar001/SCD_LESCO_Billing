@@ -4,9 +4,7 @@ import GUI.Emp_TaxesInfo;
 import Models.DataBaseHandler;
 
 import javax.swing.*;
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class TaxManager {
     private String filename = "TariffTaxInfo.txt";
