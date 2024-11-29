@@ -60,10 +60,14 @@ public class GUI_Manager
             f.replacePanel(cust.getPanel(), emp.getPanel());
         });
         cust.getLoginButton().addActionListener(eListen -> {
-            if (obj_c.isCustomerValid(cust.getUserID(), cust.getCNIC())) {
-                CustOptionMenu(f, obj_c.getUserName(), cust);
-            } else {
-                JOptionPane.showMessageDialog(null, "Incorrect ID or CNIC", "Error", JOptionPane.ERROR_MESSAGE);
+            try {
+                if (obj_c.isCustomerValid(cust.getUserID(), cust.getCNIC())) {
+                    CustOptionMenu(f, obj_c.getUserName(), cust);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Incorrect ID or CNIC", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
     }
@@ -96,7 +100,12 @@ public class GUI_Manager
         //---------------------Update Password Panel Settings----------------------//
 
         updatePassword.getUpdateButton().addActionListener(e->{
-            String newPass = obj_e.updateMenu(name, pass[0], updatePassword);
+            String newPass = null;
+            try {
+                newPass = obj_e.updateMenu(name, pass[0], updatePassword);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             if (!newPass.equals("no change")) {
                 pass[0] = newPass;
             }
@@ -299,7 +308,11 @@ public class GUI_Manager
         expiringCNIC.getChangeStatusButton().addActionListener(this::ActionPerformer);
         expiringCNIC.gettaxesButton().addActionListener(this::ActionPerformer);
         expiringCNIC.getViewAllButton().addActionListener(e->{
-            nadraData.refreshPanel(obj_c.viewAllCnic());
+            try {
+                nadraData.refreshPanel(obj_c.viewAllCnic());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             f.replacePanel(oldPanel,nadraData.getPanel());
             oldPanel = nadraData.getPanel();
         });
@@ -315,7 +328,11 @@ public class GUI_Manager
         nadraData.gettaxesButton().addActionListener(this::ActionPerformer);
         nadraData.getBackButton().addActionListener(this::ActionPerformer);
         nadraData.getSearchButton().addActionListener(e->{
-            nadraData.refreshPanel(obj_c.viewSearchCNIC(nadraData.getSearched()));
+            try {
+                nadraData.refreshPanel(obj_c.viewSearchCNIC(nadraData.getSearched()));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         //---------------------View Bill Panel Settings-----------------------------------//
@@ -364,15 +381,31 @@ public class GUI_Manager
         custInfo.getViewExpireButton().addActionListener(this::ActionPerformer);
 
         custInfo.getSearchButton().addActionListener(e->{
-            custInfo.refreshPanel(obj_c.viewSearchCustomer(custInfo.getSearched()),obj_c);
+            try {
+                custInfo.refreshPanel(obj_c.viewSearchCustomer(custInfo.getSearched()),obj_c);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         custInfo.getAddButton().addActionListener(e->{
-            obj_c.addCustomer(custInfo.getCNIC(), custInfo.getName(), custInfo.getAddress(), custInfo.getPhone(), custInfo.getCType(), custInfo.getMType());
-            custInfo.refreshPanel(obj_c.viewAllCustomers(),obj_c);
+            try {
+                obj_c.addCustomer(custInfo.getCNIC(), custInfo.getName(), custInfo.getAddress(), custInfo.getPhone(), custInfo.getCType(), custInfo.getMType());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                custInfo.refreshPanel(obj_c.viewAllCustomers(),obj_c);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         custInfo.getRefreshButton().addActionListener(e->{
             custInfo.getRefreshFrame().dispose();
-            custInfo.refreshPanel(obj_c.viewAllCustomers(),obj_c);
+            try {
+                custInfo.refreshPanel(obj_c.viewAllCustomers(),obj_c);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         //---------------------Bill Info Panel Settings-------------------------------//
@@ -412,7 +445,11 @@ public class GUI_Manager
             oldPanel=updatePassword.getPanel();
         }
         else if(e.getSource() == updatePassword.getCustomerInfoButton() || e.getSource() == changeStatus.getCustomerInfoButton() || e.getSource() == viewReport.getCustomerInfoButton() || e.getSource() == taxesInfo.getCustomerInfoButton() || e.getSource() == expiringCNIC.getCustomerInfoButton() || e.getSource() == viewNoneBill.getCustomerInfoButton() || e.getSource() == foundBill.getCustomerInfoButton() || e.getSource() == nadraData.getCustomerInfoButton() || e.getSource() == billInfo.getCustomerInfoButton()){
-            custInfo.refreshPanel(obj_c.viewAllCustomers(), obj_c);
+            try {
+                custInfo.refreshPanel(obj_c.viewAllCustomers(), obj_c);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             f.replacePanel(oldPanel,custInfo.getPanel());
             oldPanel = custInfo.getPanel();
         }
@@ -440,7 +477,11 @@ public class GUI_Manager
             oldPanel = viewReport.getPanel();
         }
         else if(e.getSource() == updatePassword.getViewExpireButton() || e.getSource() == changeStatus.getViewExpireButton() || e.getSource() == viewReport.getViewExpireButton() || e.getSource() == taxesInfo.getViewExpireButton() || e.getSource() == viewNoneBill.getViewExpireButton() || e.getSource() == foundBill.getViewExpireButton() || e.getSource() == nadraData.getBackButton() || e.getSource() == custInfo.getViewExpireButton() || e.getSource() == billInfo.getViewExpireButton()){
-            expiringCNIC.setValues(obj_c.viewExpireCnic());
+            try {
+                expiringCNIC.setValues(obj_c.viewExpireCnic());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             f.replacePanel(oldPanel,expiringCNIC.getPanel());
             oldPanel = expiringCNIC.getPanel();
         }

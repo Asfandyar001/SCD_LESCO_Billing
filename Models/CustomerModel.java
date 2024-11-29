@@ -40,7 +40,6 @@ public class CustomerModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return valid;
     }
 

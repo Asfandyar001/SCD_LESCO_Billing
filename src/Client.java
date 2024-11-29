@@ -1,6 +1,7 @@
 package src;
 
 import GUI.*;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.*;
@@ -11,12 +12,13 @@ import java.util.Arrays;
 public class Client {
     private static Client client;
     private Socket socket;
-    private BufferedReader input;
+    private static BufferedReader input;
     private PrintWriter output;
-final private String IPAddress="localHost";
-final private int port=1234    ;
+    final private String IPAddress = "localhost";
+    final private int port = 1234;
+
     private Client() throws IOException {
-        socket = new Socket(IPAddress,port);
+        socket = new Socket(IPAddress, port);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         output = new PrintWriter(socket.getOutputStream(), true);
     }
@@ -42,7 +44,9 @@ final private int port=1234    ;
         output.println(object.toString());
 
         String response = getResponse();
-        return Boolean.parseBoolean(response);   }
+        return Boolean.parseBoolean(response);
+    }
+
     public boolean validateEmployee(String employeeId, String password) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "validateEmployee");
@@ -51,8 +55,8 @@ final private int port=1234    ;
         output.println(object.toString());
 
         String response = getResponse();
-        return Boolean.parseBoolean(response);   }
-
+        return Boolean.parseBoolean(response);
+    }
 
 
     public ArrayList<String> viewAllBills() throws IOException {
@@ -141,7 +145,7 @@ final private int port=1234    ;
         output.println(object.toString());
     }
 
-    public String[] getTaxData(String custType, String phase) throws IOException {
+        public String[] getTaxData(String custType, String phase) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "getTaxData");
         object.put("custType", custType);
@@ -160,8 +164,18 @@ final private int port=1234    ;
         output.println(object.toString());
         return Boolean.parseBoolean(input.readLine());
     }
+    public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "validateCustomer");
+        object.put("id", id);
+        object.put("cnic", cnic);
+        object.put("month", month);
+        object.put("year", year);
+        output.println(object.toString());
+        return Boolean.parseBoolean(input.readLine());
+    }
 
-    public boolean validateCustomerIDfromBillFile(String id, String month, String date) throws IOException {
+        public boolean validateCustomerIDfromBillFile(String id, String month, String date) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "validateCustomerIDfromBillFile");
         object.put("id", id);
@@ -188,8 +202,25 @@ final private int port=1234    ;
         String response = input.readLine();
         return response.split(",");
     }
+    public String[] getBill(String id,String year) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getBill");
+        object.put("id", id);
+        object.put("year", year);
+        output.println(object.toString());
+        String response = input.readLine();
+        return response.split(",");
+    }
+    public  boolean updateExpiryDate(String cnic,String newdate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "updateExpiryDate");
+        object.put("cnic", cnic);
+        object.put("newdate", newdate);
+        output.println(object.toString());
+        return Boolean.parseBoolean(input.readLine());
+    }
 
-    public int[] viewReport() throws IOException {
+        public int[] viewReport() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewReport");
         output.println(object.toString());
@@ -216,9 +247,11 @@ final private int port=1234    ;
         object.put("id", id);
         object.put("cnic", cnic);
         output.println(object.toString());
-        return Boolean.parseBoolean(input.readLine());
-    }
 
+        String response = getResponse();
+
+        return Boolean.parseBoolean(response);
+    }
     public String getUserName() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "getUserName");
@@ -235,7 +268,7 @@ final private int port=1234    ;
         object.put("noBill", noBill.toString());
         output.println(object.toString());
     }
-
+    /*
     public boolean addCustomer(String cnic, String name, String address, String phone, String custType, String meterType) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "addCustomer");
@@ -245,6 +278,24 @@ final private int port=1234    ;
         object.put("phone", phone);
         object.put("custType", custType);
         object.put("meterType", meterType);
+        output.println(object.toString());
+        return Boolean.parseBoolean(input.readLine());
+    }
+
+     */
+    public boolean addCustomer(String id, String cnic, String name, String address, String phone, String custType, String meterType, String date, String RUC, String PHUC) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function","addCustomer");
+        object.put("id", id);
+        object.put("cnic", cnic);
+        object.put("name", name);
+        object.put("address", address);
+        object.put("phone", phone);
+        object.put("custType", custType);
+        object.put("meterType", meterType);
+        object.put("date", date);
+        object.put("RUC", RUC);
+        object.put("PHUC", PHUC);
         output.println(object.toString());
         return Boolean.parseBoolean(input.readLine());
     }
@@ -262,49 +313,124 @@ final private int port=1234    ;
     public ArrayList<String> viewExpireCnic() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewExpireCnic");
-        object.put("action", "viewExpireCnic");
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
-    }
+        output.println(object.toString()); // Send the request to the server
 
-    public ArrayList<String> viewAllCnic() throws IOException {
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        ArrayList<String> expiredCnicList = new ArrayList<>();
+
+        try {
+            // Parse the JSON response into a JSONArray
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                expiredCnicList.add(jsonArray.getString(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return expiredCnicList;
+    }
+    public  ArrayList<String> viewAllCnic() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewAllCnic");
-        object.put("action", "viewAllCnic");
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
-    }
+        output.println(object.toString()); // Send the request to the server
 
-    public ArrayList<String> viewSearchCNIC(String search) throws IOException {
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        ArrayList<String> viewAllCnic = new ArrayList<>();
+
+        try {
+            // Parse the JSON response into a JSONArray
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                viewAllCnic.add(jsonArray.getString(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return viewAllCnic;
+    }
+    public ArrayList<String> viewSearchCnic(String search) throws IOException {
+
         JSONObject object = new JSONObject();
-        object.put("function", "viewSearchCNIC");
-        object.put("search", search);
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
-    }
+        object.put("function", "viewSearchCnic");
+        object.put("search",search);
+        output.println(object.toString()); // Send the request to the server
 
-    public ArrayList<String> viewAllCustomers() throws IOException {
-        JSONObject object = new JSONObject();
-        object.put("function", "viewAllCustomers");
-        object.put("action", "viewAllCustomers");
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
-    }
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        ArrayList<String> viewSearchCnic = new ArrayList<>();
 
-    public ArrayList<String> viewSearchCustomer(String search) throws IOException {
+        try {
+            // Parse the JSON response into a JSONArray
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                viewSearchCnic.add(jsonArray.getString(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return viewSearchCnic;
+    }
+    public  ArrayList<String> viewSearchCustomer(String search) throws IOException {
+
         JSONObject object = new JSONObject();
         object.put("function", "viewSearchCustomer");
-        object.put("search", search);
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
+        object.put("search",search);
+        output.println(object.toString()); // Send the request to the server
+
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        ArrayList<String> viewSearchCustomer = new ArrayList<>();
+
+        try {
+            // Parse the JSON response into a JSONArray
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                viewSearchCustomer.add(jsonArray.getString(i));
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return viewSearchCustomer;
     }
 
-    public void deleteCustomer(String id) {
+        public ArrayList<String> viewAllCustomers() throws IOException {
+            JSONObject object = new JSONObject();
+            object.put("function", "viewAllCustomers");
+            output.println(object.toString()); // Send the request to the server
+
+            // Receive response
+            String response = getResponse(); // Response is a stringified JSON
+            ArrayList<String> viewAllCustomers = new ArrayList<>();
+
+            try {
+                // Parse the JSON response into a JSONArray
+                JSONArray jsonArray = new JSONArray(response);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    viewAllCustomers.add(jsonArray.getString(i));
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Handle parsing issues
+            }
+
+            return viewAllCustomers;
+    }
+    public String[] getNadra(String cnic) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getNadra");
+        object.put("cnic", cnic);
+        String response = input.readLine();
+        return response.split(",");
+    }
+
+
+
+        public void deleteCustomer(String id) {
         JSONObject object = new JSONObject();
         object.put("function", "deleteCustomer");
         object.put("id", id);
@@ -325,4 +451,50 @@ final private int port=1234    ;
         object.put("editedString", editedString);
         output.println(object.toString());
     }
-}
+    public  int cnic_count(String cnic) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "cnic_count");
+        object.put("cnic", cnic);
+        output.println(object.toString());
+        return Integer.parseInt(input.readLine());
+    }
+    public  boolean searchNadraFile(String cnic) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "searchNadraFile");
+        object.put("cnic", cnic);
+        output.println(object.toString());
+        return Boolean.parseBoolean(input.readLine());
+    }
+
+        public void updatePass(String username, String newPass) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "updatePass");
+        object.put("username", username);
+        object.put("newPass", newPass);
+        output.println(object.toString());
+    }
+
+    public String[] getCustomer(String id) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getCustomer");
+        object.put("id", id);
+        String response = input.readLine();
+        return response.split(",");
+    }
+    public String[] getTax() throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getTax");
+        String response = input.readLine();
+        return response.split(",");
+    }
+    public boolean isUnique(String str, int index) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "isUnique");
+        object.put("str", str);
+        object.put("index", index);
+        output.println(object.toString());
+        return Boolean.parseBoolean(input.readLine());
+    }
+
+
+    }

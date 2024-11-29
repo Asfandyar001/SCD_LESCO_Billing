@@ -491,7 +491,11 @@ public class Emp_CustomerInfo extends JPanel{
                         }
                         else
                         {
-                            obj_c.editCustomer(line);
+                            try {
+                                obj_c.editCustomer(line);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
                             showRefreshWindow("Images/Refreshequired.png");
                         }
                     }
@@ -512,7 +516,11 @@ public class Emp_CustomerInfo extends JPanel{
                     int result = JOptionPane.showConfirmDialog(null,"Delete ID: "+ id.getText() +"\nDo you want to proceed?", "Confirmation", JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION)
                     {
-                        obj_c.deleteCustomer(id.getText());
+                        try {
+                            obj_c.deleteCustomer(id.getText());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         showRefreshWindow("Images/Refreshequired.png");
                     }
                 }

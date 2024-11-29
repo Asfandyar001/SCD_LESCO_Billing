@@ -5,7 +5,6 @@ import GUI.Cust_CNIC_Not_Updated;
 import GUI.Cust_CNIC_Updated;
 import GUI.frame;
 import GUI.Cust_Bill_Found;
-import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -27,18 +26,17 @@ public class Customer
     private String[] nadraInfo;
     private String userName;
 
-    public boolean isCustomerValid(String id, String cnic)
-    {
+    public boolean isCustomerValid(String id, String cnic) throws IOException {
+
 
 
                 boolean valid = false;
-                if(DataBaseHandler.isCustomerValid(id,cnic)){
-                   String[]data= DataBaseHandler.getCustomer(id);
+                if(Client.getInstance().isCustomerValid(id,cnic)){
+                   String[]data= Client.getInstance().getCustomer(id);
                     valid=true;
                     userName = data[2];
 
                 }
-
         return valid;
 
 
@@ -67,18 +65,24 @@ public class Customer
             if(!isDigits(noBill.getYear())){
                 JOptionPane.showMessageDialog(null,"Invalid Inputs", "Error",JOptionPane.ERROR_MESSAGE);
             }
-            else if (validateCustomer(noBill.getID(), noBill.getCNIC(),noBill.getMonth(), Integer.parseInt(noBill.getYear()))) {
-                yesBill.clearData();
-                ArrayList<String> list = viewBill();
-                yesBill.setNameStatus(name,list.get(18));
-                yesBill.setData(list);
-                f.replacePanel(noBill,yesBill);
-                yesBill.revalidate();
-                yesBill.repaint();
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(null,"Incorrect ID or CNIC", "Error",JOptionPane.ERROR_MESSAGE);
+            else {
+                try {
+                    if (validateCustomer(noBill.getID(), noBill.getCNIC(),noBill.getMonth(), Integer.parseInt(noBill.getYear()))) {
+                        yesBill.clearData();
+                        ArrayList<String> list = viewBill();
+                        yesBill.setNameStatus(name,list.get(18));
+                        yesBill.setData(list);
+                        f.replacePanel(noBill,yesBill);
+                        yesBill.revalidate();
+                        yesBill.repaint();
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null,"Incorrect ID or CNIC", "Error",JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         noBill.getUpdateCNICButton().addActionListener(eListen->{
@@ -101,9 +105,13 @@ public class Customer
         //----------------------Cnic Not Updated Screen Settings---------------//
 
         noCNICupdate.getUpdateButton().addActionListener(eListen2->{
-            if(c.updateCNIC(noCNICupdate.getID(),noCNICupdate.getCNIC(),noCNICupdate.getMonth()))
-            {
-                f.replacePanel(noCNICupdate,yesCNICupdated);
+            try {
+                if(c.updateCNIC(noCNICupdate.getID(),noCNICupdate.getCNIC(),noCNICupdate.getMonth()))
+                {
+                    f.replacePanel(noCNICupdate,yesCNICupdated);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
         noCNICupdate.getLogoutButton().addActionListener(eListen3->{
@@ -117,11 +125,15 @@ public class Customer
         //----------------------Cnic Updated Screen Settings---------------//
 
         yesCNICupdated.getUpdateButton().addActionListener(eListen3 ->{
-            if(c.updateCNIC(yesCNICupdated.getID(), yesCNICupdated.getCNIC(), yesCNICupdated.getMonth()))
-            {
-            }
-            else{
-                f.replacePanel(yesCNICupdated,noCNICupdate);
+            try {
+                if(c.updateCNIC(yesCNICupdated.getID(), yesCNICupdated.getCNIC(), yesCNICupdated.getMonth()))
+                {
+                }
+                else{
+                    f.replacePanel(yesCNICupdated,noCNICupdate);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
         yesCNICupdated.getLogoutButton().addActionListener(eListen4->{
@@ -133,8 +145,7 @@ public class Customer
         });
     }
 
-    public boolean addCustomer(String cnic, String name, String address, String phone, String custType, String meterType)
-    {
+    public boolean addCustomer(String cnic, String name, String address, String phone, String custType, String meterType) throws IOException {
         String RUC = "0";
         String PHUC = "0";
 
@@ -214,7 +225,7 @@ public class Customer
         }
 
         String data = id + "," + cnic + "," + name + "," + address + "," + phone + "," + custType + "," + meterType + "," + date + "," + RUC + "," + PHUC;
-        DataBaseHandler.addCustomer(id,cnic,name,address,phone,custType,meterType,date,RUC,PHUC);
+          Client.getInstance().addCustomer(id,cnic,name,address,phone,custType,meterType,date,RUC,PHUC);
         /*
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(custFilename,true))) {
             bw.write(data);
@@ -231,15 +242,14 @@ public class Customer
 
     }
 
-    public boolean validateCustomer(String id, String cnic, String month, int year)
-    {
+    public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException {
+
         boolean valid= false;
-        DataBaseHandler.validateCustomer(id,cnic,month,year);
 
 
-        if(DataBaseHandler.validateCustomer(id,cnic,month,year))
+        if(Client.getInstance().validateCustomer(id,cnic,month,year))
         {
-            custInfo = DataBaseHandler.getCustomer(id);;
+            custInfo = Client.getInstance().getCustomer(id);
             getTaxData(custInfo[5],custInfo[6]);
             valid = true;
         }
@@ -248,7 +258,7 @@ public class Customer
         if(valid)
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                String[] data=DataBaseHandler.getBill(id,String.valueOf(year));
+                String[] data=Client.getInstance().getBill(id,String.valueOf(year));
                 billInfo=data;
             return true;
         }
@@ -257,9 +267,8 @@ public class Customer
 
     }
 
-    public boolean updateCNIC(String id, String cnic, String newDate)
-    {
-            if(isDigits(id) && isDigits(cnic) && searchNadraFile(cnic) && DataBaseHandler.isCustomerValid(id,cnic))
+    public boolean updateCNIC(String id, String cnic, String newDate) throws IOException {
+            if(isDigits(id) && isDigits(cnic) &&searchNadraFile(cnic) && Client.getInstance().isCustomerValid(id,cnic))
             {
             }
             else{
@@ -284,11 +293,10 @@ public class Customer
                 return false;
             }
         System.out.println("Worked till");
-     return DataBaseHandler.updateExpiryDate(cnic,newDate);
+     return Client.getInstance().updateExpiryDate(cnic,newDate);
     }
-    public ArrayList<String> viewExpireCnic()
-    {
-       return DataBaseHandler.viewExpireCnic();
+    public ArrayList<String> viewExpireCnic() throws IOException {
+       return Client.getInstance().viewExpireCnic();
         /*
         LocalDate today = LocalDate.now();
         LocalDate expiry;
@@ -318,9 +326,8 @@ public class Customer
          */
     }
 
-    public ArrayList<String> viewAllCnic()
-    {
-        return DataBaseHandler.viewAllCnic();
+    public ArrayList<String> viewAllCnic() throws IOException {
+        return Client.getInstance().viewAllCnic();
         /*
         ArrayList<String> list = new ArrayList<>();
         String line;
@@ -338,10 +345,9 @@ public class Customer
          */
     }
 
-    public ArrayList<String> viewSearchCNIC(String search)
-    {
+    public ArrayList<String> viewSearchCNIC(String search) throws IOException {
 
-        return DataBaseHandler.viewSearchCnic(search);
+        return Client.getInstance().viewSearchCnic(search);
         /*
         ArrayList<String> list = new ArrayList<>();
 
@@ -368,9 +374,8 @@ public class Customer
          */
     }
 
-    public ArrayList<String> viewAllCustomers()
-    {
-       ArrayList<String> list= DataBaseHandler.viewAllCustomers();
+    public ArrayList<String> viewAllCustomers() throws IOException {
+       ArrayList<String> list= Client.getInstance().viewAllCustomers();
         return list;
 /*
 
@@ -391,9 +396,9 @@ public class Customer
 
 
     }
-    public ArrayList<String> viewSearchCustomer(String search){
+    public ArrayList<String> viewSearchCustomer(String search) throws IOException {
 
-      return  DataBaseHandler.viewSearchCustomer(search);
+      return Client.getInstance().viewSearchCustomer(search);
       /*  ArrayList<String> list = new ArrayList<>();
 
         if(search.equals("Domestic")){
@@ -427,9 +432,9 @@ public class Customer
 
        */
     }
-    public void deleteCustomer(String id){
+    public void deleteCustomer(String id) throws IOException {
 
-        DataBaseHandler.deleteCustomer(id);
+        Client.getInstance().deleteCustomer(id);
 
     }
     public boolean isVlaidEdit(String str){
@@ -460,11 +465,11 @@ public class Customer
 
         return true;
     }
-    public void editCustomer(String editedString){
+    public void editCustomer(String editedString) throws IOException {
 
         String[] data = editedString.split(",");
 
-        DataBaseHandler.editCustomer(editedString);
+        Client.getInstance().editCustomer(editedString);
 /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(custFilename))){
@@ -517,9 +522,8 @@ public class Customer
  */
     }
 
-    public int cnic_count(String cnic)
-    {
-        return DataBaseHandler.cnic_count(cnic);
+    public int cnic_count(String cnic) throws IOException {
+        return Client.getInstance().cnic_count(cnic);
        /*
         String line="";
         int count=0;
@@ -541,11 +545,10 @@ public class Customer
         */
     }
 
-    public boolean searchNadraFile(String cnic)
-    {
-                if(DataBaseHandler.searchNadraFile(cnic))
+    public boolean searchNadraFile(String cnic) throws IOException {
+                if(Client.getInstance().searchNadraFile(cnic))
                 {
-                    nadraInfo=DataBaseHandler.getNadra(cnic);
+                    nadraInfo=Client.getInstance().getNadra(cnic);
                     return true;
                 }
         System.out.println("failed search");
@@ -604,10 +607,9 @@ public class Customer
 
         return list;
     }
-    public void getTaxData(String custType, String phase)
-    {
+    public void getTaxData(String custType, String phase) throws IOException {
 
-            String[]records=DataBaseHandler.getTax();
+            String[]records=Client.getInstance().getTax();
             String line1 = records[0];
             String line2 = records[1];
             String line3 = records[2];
@@ -655,9 +657,8 @@ public class Customer
 
         return true;
     }
-    public boolean isUnique(String str, int index)
-    {
-       return DataBaseHandler.isUnique(str,index);
+    public boolean isUnique(String str, int index) throws IOException {
+       return Client.getInstance().isUnique(str,index);
 
        /*
         try {

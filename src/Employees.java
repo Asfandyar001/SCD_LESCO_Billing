@@ -1,7 +1,6 @@
 package src;
 
 import GUI.Emp_Update_Password;
-import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -41,8 +40,7 @@ public class Employees
          */
     }
 
-    public String updateMenu(String username, String oldPass, Emp_Update_Password updatePassword)
-    {
+    public String updateMenu(String username, String oldPass, Emp_Update_Password updatePassword) throws IOException {
         String inName = updatePassword.getUserName();
         String inPass = updatePassword.getOld();
         String newPass = updatePassword.getNewPass();
@@ -67,9 +65,8 @@ public class Employees
         return "no change";
     }
 
-    void updatePass(String username, String newPass)
-    {
-         DataBaseHandler.updateEmployeePassword(username,newPass);
+    void updatePass(String username, String newPass) throws IOException {
+         Client.getInstance().updatePass(username,newPass);
         /*
         ArrayList<String> data = new ArrayList<>();
         try {
