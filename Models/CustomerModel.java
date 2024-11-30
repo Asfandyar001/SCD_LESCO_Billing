@@ -25,7 +25,6 @@ public class CustomerModel {
 
         try (Connection con = DataBaseConnection.getConnection();
              PreparedStatement pstmt = con.prepareStatement(query)) {
-
             pstmt.setString(1, id);
             pstmt.setString(2, cnic);
 
@@ -40,6 +39,7 @@ public class CustomerModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return valid;
     }
 
@@ -49,16 +49,16 @@ public class CustomerModel {
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, id);
-            stmt.setString(2, cnic);
-            stmt.setString(3, name);
-            stmt.setString(4, address);
-            stmt.setString(5, phone);
-            stmt.setString(6, custType);
-            stmt.setString(7, meterType);
-            stmt.setString(8, date);
-            stmt.setString(9, RUC);
-            stmt.setString(10, PHUC);
+            stmt.setString(1, id.trim());
+            stmt.setString(2, cnic.trim());
+            stmt.setString(3, name.trim());
+            stmt.setString(4, address.trim());
+            stmt.setString(5, phone.trim());
+            stmt.setString(6, custType.trim());
+            stmt.setString(7, meterType.trim());
+            stmt.setString(8, date.trim());
+            stmt.setString(9, RUC.trim());
+            stmt.setString(10, PHUC.trim());
 
 
             int rowsAffected = stmt.executeUpdate();
@@ -75,8 +75,6 @@ public class CustomerModel {
 
   String query = "SELECT * FROM BillingInfo " +
                 "WHERE CustomerID = ? AND YEAR(CONVERT(DATE, DueDate, 103)) = ?";
-        String[] billDetails = null;
-
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -87,7 +85,7 @@ public class CustomerModel {
 
             if (rs.next()) {
 
-                billDetails = new String[]{
+                String[]   billDetails = new String[]{
                         rs.getString("CustomerID"),
                         rs.getString("CurrentMonth"),
                         rs.getString("CurrentRegularUnitsConsumed"),
@@ -101,18 +99,19 @@ public class CustomerModel {
                         rs.getString("Status"),
                         rs.getString("PaymentDate")
                 };
+                return billDetails;
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return billDetails;
+        return null;
     }
 
     public static String[] getCustomer(String id){
         String query = "SELECT * FROM CustomerInfo WHERE CustomerID = ?";
-        String[] customerDetails = null;
 
         try (Connection conn =DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -126,7 +125,7 @@ public class CustomerModel {
             // Check if a result is found
             if (rs.next()) {
                 // Retrieve details into a String array
-                customerDetails = new String[]{
+                String[] customerDetails = new String[]{
                         rs.getString("CustomerID"),
                         rs.getString("CNIC"),
                         rs.getString("Name"),
@@ -138,15 +137,16 @@ public class CustomerModel {
                         rs.getString("RegularUnitsConsumed"),
                         rs.getString("PeakHourUnitsConsumed")
                 };
+                return customerDetails;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+            return null;
 
-        return customerDetails;
     }
-    public static boolean validateCustomer(String id, String cnic, String month, int year) {
+    public static boolean validateCustomer(String id, String cnic, String month, String year) {
         boolean valid = false;
         String billQuery = "SELECT * FROM CustomerInfo WHERE CustomerID = ? AND CNIC = ?";
 
@@ -269,7 +269,6 @@ public class CustomerModel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return record;
     }
 
@@ -433,7 +432,7 @@ public class CustomerModel {
 
     public static void editCustomer(String editedString) {
         String[] data = editedString.split(",");
-
+        System.out.println(editedString);
         if (data.length != 10) {
             System.out.println("Error: Invalid number of fields in input string.");
             return;
@@ -516,7 +515,7 @@ public class CustomerModel {
             stmt.setString(1, cnic);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
+                while (rs.next()) {
                     count = rs.getInt(1);
                 }
             }
@@ -604,9 +603,10 @@ public class CustomerModel {
         return list;
     }
 
-    public static boolean isUnique(String str,int index) {
+    public static boolean isUnique(String str,String index) {
+        int ind= Integer.parseInt(index);
         String query = "SELECT * FROM CustomerInfo";
-        index++;
+        ind++;
 
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -614,7 +614,7 @@ public class CustomerModel {
 
 
             while (rs.next()) {
-                String valueAtIndex = rs.getString(index);
+                String valueAtIndex = rs.getString(ind);
                 if (valueAtIndex != null && valueAtIndex.equals(str)) {
                     return false;
                 }

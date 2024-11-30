@@ -79,7 +79,6 @@ public class BillingModel {
 
         return list;
     }
-
     public static void addBill(int customerID, String currentMonth, String regularUnits, String peakUnits,
                                String entryDate, double electricityCost, double salesTax, double fixedCharges,
                                String dueDate, String status, String paymentDate) {

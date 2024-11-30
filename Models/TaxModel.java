@@ -4,13 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class TaxModel {
-    public static String[] getTaxData(){
+    public static ArrayList<String> getTaxData(){
         String query = "SELECT * FROM TariffTaxInfo";
-        String []record=new String[4];
+        ArrayList<String> list=new ArrayList<>();
         try (Connection connection =DataBaseConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-            int i=0;
             while (resultSet.next()) {
                 String[] row = new String[5];
                 row[0] = resultSet.getString("MeterType");
@@ -18,17 +17,15 @@ public class TaxModel {
                 row[2] = resultSet.getString("PeakHourUnitPrice");
                 row[3] = resultSet.getString("TaxPercentage");
                 row[4] = resultSet.getString("FixedCharges");
-                  record[i]=row[0]+","+row[1]+","+row[2]+","+row[3]+","+row[4];
-                  i++;
-
-
+                list.add(row[0]+","+row[1]+","+row[2]+","+row[3]+","+row[4]);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return record;
+        return list;
     }
+
     public static ArrayList<String> getData(){
         String sql="SELECT * FROM TariffTaxInfo";
         String []record=new String[5];

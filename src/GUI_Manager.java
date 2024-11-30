@@ -61,12 +61,17 @@ public class GUI_Manager
         });
         cust.getLoginButton().addActionListener(eListen -> {
             try {
+
                 if (obj_c.isCustomerValid(cust.getUserID(), cust.getCNIC())) {
                     CustOptionMenu(f, obj_c.getUserName(), cust);
+
                 } else {
                     JOptionPane.showMessageDialog(null, "Incorrect ID or CNIC", "Error", JOptionPane.ERROR_MESSAGE);
+
                 }
+
             } catch (IOException e) {
+
                 throw new RuntimeException(e);
             }
         });
@@ -122,12 +127,16 @@ public class GUI_Manager
         //---------------------Change Bill Status Panel Settings----------------------//
 
         changeStatus.getUpdateButton().addActionListener(e->{
-            if(b.changePaidStatus(changeStatus))
-            {
-                changeStatus.setOutput("Bill Status Updated Successfully!");
-            }
-            else{
-                changeStatus.setOutput("No Bill Status Changed!");
+            try {
+                if(b.changePaidStatus(changeStatus))
+                {
+                    changeStatus.setOutput("Bill Status Updated Successfully!");
+                }
+                else{
+                    changeStatus.setOutput("No Bill Status Changed!");
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
         changeStatus.getLogoutButton().addActionListener(this::ActionPerformer);
@@ -351,13 +360,17 @@ public class GUI_Manager
         });
 
         viewNoneBill.getSearchButton().addActionListener(e->{
-            if(b.viewBill(f,viewNoneBill)){
-                String[] data = b.getBillList();
-                foundBill.clearData();
-                foundBill.setImg(name,data[10]);
-                foundBill.setData(data);
-                f.replacePanel(oldPanel,foundBill.getPanel());
-                oldPanel = foundBill.getPanel();
+            try {
+                if(b.viewBill(f,viewNoneBill)){
+                    String[] data = b.getBillList();
+                    foundBill.clearData();
+                    foundBill.setImg(name,data[10]);
+                    foundBill.setData(data);
+                    f.replacePanel(oldPanel,foundBill.getPanel());
+                    oldPanel = foundBill.getPanel();
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
         viewNoneBill.getLogoutButton().addActionListener(this::ActionPerformer);
@@ -420,15 +433,33 @@ public class GUI_Manager
         billInfo.getViewExpireButton().addActionListener(this::ActionPerformer);
 
         billInfo.getSearchButton().addActionListener(e->{
-            billInfo.refreshPanel(b.viewSearchedBills(billInfo.getSearched()),b);
+            try {
+                billInfo.refreshPanel(b.viewSearchedBills(billInfo.getSearched()),b);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         billInfo.getAddButton().addActionListener(e->{
-            b.addNewBill(billInfo.getID(), billInfo.getCMR(), billInfo.getCMRP(), billInfo.getMonth());
-            billInfo.refreshPanel(b.viewAllBills(),b);
+            try {
+                b.addNewBill(billInfo.getID(), billInfo.getCMR(), billInfo.getCMRP(), billInfo.getMonth());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            try {
+                billInfo.refreshPanel(b.viewAllBills(),b);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
         billInfo.getRefreshButton().addActionListener(e->{
             billInfo.getRefreshFrame().dispose();
-            billInfo.refreshPanel(b.viewAllBills(),b);
+            try {
+                billInfo.refreshPanel(b.viewAllBills(),b);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
     }
@@ -454,7 +485,11 @@ public class GUI_Manager
             oldPanel = custInfo.getPanel();
         }
         else if(e.getSource() == updatePassword.getBillInfoButton() || e.getSource() == changeStatus.getBillInfoButton() || e.getSource() == viewReport.getBillInfoButton() || e.getSource() == taxesInfo.getBillInfoButton() || e.getSource() == expiringCNIC.getBillInfoButton() || e.getSource() == viewNoneBill.getBillInfoButton() || e.getSource() == foundBill.getBillInfoButton() || e.getSource() == nadraData.getBillInfoButton() || e.getSource() == custInfo.getBillInfoButton()){
-            billInfo.refreshPanel(b.viewAllBills(), b);
+            try {
+                billInfo.refreshPanel(b.viewAllBills(), b);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             f.replacePanel(oldPanel,billInfo.getPanel());
             oldPanel = billInfo.getPanel();
         }
@@ -472,7 +507,11 @@ public class GUI_Manager
             oldPanel = viewNoneBill.getPanel();
         }
         else if(e.getSource() == updatePassword.getViewReportButton() || e.getSource() == changeStatus.getViewReportButton() || e.getSource() == taxesInfo.getViewReportButton() || e.getSource() == expiringCNIC.getViewReportButton() || e.getSource() == viewNoneBill.getViewReportButton() || e.getSource() == foundBill.getViewReportButton() || e.getSource() == nadraData.getViewReportButton() || e.getSource() == custInfo.getViewReportButton() || e.getSource() == billInfo.getViewReportButton()){
-            b.viewReport(viewReport);
+            try {
+                b.viewReport(viewReport);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             f.replacePanel(oldPanel,viewReport.getPanel());
             oldPanel = viewReport.getPanel();
         }

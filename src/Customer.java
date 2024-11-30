@@ -5,6 +5,7 @@ import GUI.Cust_CNIC_Not_Updated;
 import GUI.Cust_CNIC_Updated;
 import GUI.frame;
 import GUI.Cust_Bill_Found;
+import Models.DataBaseHandler;
 
 import javax.swing.*;
 import java.io.*;
@@ -28,10 +29,9 @@ public class Customer
 
     public boolean isCustomerValid(String id, String cnic) throws IOException {
 
-
-
                 boolean valid = false;
                 if(Client.getInstance().isCustomerValid(id,cnic)){
+
                    String[]data= Client.getInstance().getCustomer(id);
                     valid=true;
                     userName = data[2];
@@ -70,6 +70,7 @@ public class Customer
                     if (validateCustomer(noBill.getID(), noBill.getCNIC(),noBill.getMonth(), Integer.parseInt(noBill.getYear()))) {
                         yesBill.clearData();
                         ArrayList<String> list = viewBill();
+
                         yesBill.setNameStatus(name,list.get(18));
                         yesBill.setData(list);
                         f.replacePanel(noBill,yesBill);
@@ -246,19 +247,22 @@ public class Customer
 
         boolean valid= false;
 
-
-        if(Client.getInstance().validateCustomer(id,cnic,month,year))
+        String y=String.valueOf(year);
+        if(Client.getInstance().validateCustomer(id,cnic,month,y))
         {
+
             custInfo = Client.getInstance().getCustomer(id);
+
             getTaxData(custInfo[5],custInfo[6]);
             valid = true;
         }
-
         billInfo = new String[]{"Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found", "Not Found"};
         if(valid)
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
                 String[] data=Client.getInstance().getBill(id,String.valueOf(year));
+
                 billInfo=data;
             return true;
         }
@@ -292,7 +296,7 @@ public class Customer
                 JOptionPane.showMessageDialog(null,"Invalid Date : Try Again","Error",JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-        System.out.println("Worked till");
+
      return Client.getInstance().updateExpiryDate(cnic,newDate);
     }
     public ArrayList<String> viewExpireCnic() throws IOException {
@@ -438,8 +442,11 @@ public class Customer
 
     }
     public boolean isVlaidEdit(String str){
-        String[] data = str.split(",");
 
+        String[] data = str.trim().split(",");
+        for(int i=0;i<data.length;i++) {
+            data[i] = data[i].trim();
+        }
         if(!isAlphabets(data[2]) || !isDigits(data[4]) || data[4].length()!=11){
             return false;
         }
@@ -468,7 +475,6 @@ public class Customer
     public void editCustomer(String editedString) throws IOException {
 
         String[] data = editedString.split(",");
-
         Client.getInstance().editCustomer(editedString);
 /*
         ArrayList<String> list = new ArrayList<>();
@@ -523,7 +529,9 @@ public class Customer
     }
 
     public int cnic_count(String cnic) throws IOException {
-        return Client.getInstance().cnic_count(cnic);
+        int value= DataBaseHandler.cnic_count(cnic);
+        System.out.println(value);
+        return value;
        /*
         String line="";
         int count=0;
@@ -609,12 +617,12 @@ public class Customer
     }
     public void getTaxData(String custType, String phase) throws IOException {
 
-            String[]records=Client.getInstance().getTax();
-            String line1 = records[0];
-            String line2 = records[1];
-            String line3 = records[2];
-            String line4 = records[3];
+            ArrayList<String> list=Client.getInstance().getTax();
 
+            String line1 = list.get(0);
+            String line2 = list.get(1);
+            String line3 = list.get(2);
+            String line4 = list.get(3);
 
             if((custType.equals("D") || custType.equals("d")) && (phase.equals("s") || phase.equals("S")))
             {
@@ -658,7 +666,7 @@ public class Customer
         return true;
     }
     public boolean isUnique(String str, int index) throws IOException {
-       return Client.getInstance().isUnique(str,index);
+       return Client.getInstance().isUnique(str, String.valueOf(index));
 
        /*
         try {

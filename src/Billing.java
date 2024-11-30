@@ -22,8 +22,7 @@ public class Billing
     private String[] arrayList;
     private String[] billList;
 
-    public boolean addNewBill(String custID, String currentMeterReading, String currentMeterReadingPeak, String billingMonth)
-    {
+    public boolean addNewBill(String custID, String currentMeterReading, String currentMeterReadingPeak, String billingMonth) throws IOException {
         String paidStatus = "UnPaid";
         String paymentDate = "Not Paid";
 
@@ -59,7 +58,7 @@ public class Billing
         LocalDate now = LocalDate.parse(readingEntryDate,formatter);
         int current_year = now.getYear();
 
-        ArrayList<String> Bills=DataBaseHandler.getBillforAdd();
+        ArrayList<String> Bills=Client.getInstance().getBillforAdd();
                 for(int i=0;i<Bills.size();i++){
                 data = Bills.get(i).split(",");
 
@@ -139,12 +138,13 @@ public class Billing
         float totalBillingAmount = costOfElectricity + salesTaxAmount + fixedCharges;
 
         //String billData = custID + "," + billingMonth + "," + currentMeterReading + "," + currentMeterReadingPeak + "," + readingEntryDate + "," + costOfElectricity + "," + salesTaxAmount + "," + fixedCharges + "," + totalBillingAmount + "," + dueDate + "," + paidStatus + "," + paymentDate;
-        DataBaseHandler.addBill(Integer.parseInt(custID),billingMonth,currentMeterReading,currentMeterReadingPeak,readingEntryDate,costOfElectricity, salesTaxAmount,fixedCharges,dueDate,paidStatus,paymentDate);
+        Client.getInstance().addBill(Integer.parseInt(custID),billingMonth,currentMeterReading,currentMeterReadingPeak,readingEntryDate,costOfElectricity, salesTaxAmount,fixedCharges,dueDate,paidStatus,paymentDate);
        // appendFile(billFilename,billData);
         return true;
     }
-    public ArrayList<String> viewAllBills(){
-        return DataBaseHandler.getBillforAdd();
+    public ArrayList<String> viewAllBills() throws IOException {
+        ArrayList <String> list= Client.getInstance().getBillforAdd();
+        return list;
         /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
@@ -159,9 +159,9 @@ public class Billing
 
          */
     }
-    public ArrayList<String> viewSearchedBills(String search){
+    public ArrayList<String> viewSearchedBills(String search) throws IOException, InterruptedException {
 
-        return DataBaseHandler.viewSearchedBills(search);
+        return Client.getInstance().viewSearchedBills(search);
         /*
         ArrayList<String> list = new ArrayList<>();
         String line;
@@ -185,8 +185,8 @@ public class Billing
 
          */
     }
-    public void deleteBill(String id, String month, String eDate){
-        DataBaseHandler.deleteBill(id,month,eDate);
+    public void deleteBill(String id, String month, String eDate) throws IOException {
+        Client.getInstance().deleteBill(id,month,eDate);
         /*
         ArrayList<String> list = new ArrayList<>();
         try(BufferedReader br = new BufferedReader(new FileReader(billFilename))){
@@ -219,9 +219,9 @@ public class Billing
 
          */
     }
-    public boolean isAccessAble(String id,String month, String eDate){
+    public boolean isAccessAble(String id,String month, String eDate) throws IOException {
 
-       return DataBaseHandler.isAccessAble(id,month,eDate);
+       return Client.getInstance().isAccessAble(id,month,eDate);
 /*
         System.out.println("New stuff");
         list = new ArrayList<>();
@@ -255,7 +255,7 @@ public class Billing
 
  */
     }
-    public boolean isValidEdit(String row){
+    public boolean isValidEdit(String row) throws IOException {
         String[] data = row.split(",");
 
         if(data.length<12){
@@ -321,7 +321,7 @@ public class Billing
 
         return true;
     }
-    public void editBill(String editedString){
+    public void editBill(String editedString) throws IOException {
         String[] data = editedString.split(",");
 
         if(data[3].trim().isEmpty()){
@@ -329,7 +329,7 @@ public class Billing
         }
 
         String fix = data[0] + "," + data[1] + "," +data[2] + "," +data[3] + "," +data[4] + "," +data[5] + "," +data[6] + "," +data[7] + "," +data[8] + "," +data[9] + "," +data[10] + "," +data[11];
-        DataBaseHandler.editBill(fix);
+        Client.getInstance().editBill(fix);
 
         /*
         ArrayList<String> list = new ArrayList<>();
@@ -354,8 +354,7 @@ public class Billing
          */
     }
 
-    public boolean changePaidStatus(Emp_Change_Bill_Status changeStatus)
-    {
+    public boolean changePaidStatus(Emp_Change_Bill_Status changeStatus) throws IOException {
 
 
         String custID = changeStatus.getCustID();
@@ -399,7 +398,7 @@ public class Billing
         String[] data;
         boolean found = false;
 
-        ArrayList<String> list=DataBaseHandler.getBillforAdd();
+        ArrayList<String> list=Client.getInstance().getBillforAdd();
         for(int i=0;i<list.size();i++) {
             data =list.get(i).split(",");
             if (data[0].equals(custID) && data[1].equals(billingMonth) && data[4].equals(entryDate)) {
@@ -460,7 +459,7 @@ public class Billing
         }
 
 
-        DataBaseHandler.changePaidstatus(paymentDate,custID,billingMonth,entryDate);
+        Client.getInstance().changePaidstatus(paymentDate,custID,billingMonth,entryDate);
 /*
         ArrayList<String> array = new ArrayList<>();
         try {
@@ -496,6 +495,7 @@ public class Billing
 
     public void updateCustomerFile(String custID, String RUC, String PHUC)
     {
+        //Better to not touch this for now
         DataBaseHandler.updateCustomerFile(custID,RUC,PHUC);
         /*
         ArrayList<String> array = new ArrayList<>();
@@ -558,14 +558,13 @@ public class Billing
 
      */
 
-    public String[] getTaxData(String custType, String phase)
-    {
+    public String[] getTaxData(String custType, String phase) throws IOException {
         String[] data = new String[]{""};
-        String[]records= DataBaseHandler.getTax();
-        String line1 = records[0];
-        String line2 = records[1];
-        String line3 = records[2];
-        String line4 = records[3];
+        ArrayList<String> list= Client.getInstance().getTax();
+        String line1 = list.get(0);
+        String line2 = list.get(1);
+        String line3 = list.get(2);
+        String line4 = list.get(3);
 
 
         if((custType.equals("D") || custType.equals("d")) && (phase.equals("s") || phase.equals("S")))
@@ -587,9 +586,8 @@ public class Billing
         return data;
     }
 
-    public boolean validateCustomerID(String id)
-    {
-        String[] array= DataBaseHandler.getCustomer(id);
+    public boolean validateCustomerID(String id) throws IOException {
+        String[] array= Client.getInstance().getCustomer(id);
 
         if (array[0].equals(id)) {
                     arrayList = array;
@@ -600,10 +598,11 @@ public class Billing
 
     }
 
-    public boolean validateCustomerIDfromBillFile(String id,String month,String date)
-    {
-                String[] index = DataBaseHandler.getBill(id,month,date);
-                if (index[0].equals(id) && index[1].equals(month) && index[4].equals(date)) {
+    public boolean validateCustomerIDfromBillFile(String id,String month,String date) throws IOException {
+        //cant sync dk why
+                String[] index = DataBaseHandler.getBill1(id,month,date);
+
+                if (index[0].trim().equals(id) && index[1].trim().equals(month) && index[4].trim().equals(date)) {
                     billList = index;
                     return true;
                 }
@@ -611,7 +610,7 @@ public class Billing
         return false;
     }
 
-    public boolean viewBill(frame f, Emp_ViewBill_NoBill noBill) {
+    public boolean viewBill(frame f, Emp_ViewBill_NoBill noBill) throws IOException {
         String custID = noBill.getCustID();
         String billingMonth = noBill.getBillingMonth();
 
@@ -650,13 +649,12 @@ public class Billing
         return billList;
     }
 
-    public void viewReport(Emp_View_Report viewReport)
-    {
+    public void viewReport(Emp_View_Report viewReport) throws IOException {
         float sum_paid=0;
         float sum_unpaid=0;
         String line;
         String[] data;
-        ArrayList<String> list=DataBaseHandler.getBillforAdd();
+        ArrayList<String> list=Client.getInstance().getBillforAdd();
 
       for(int i=0;i< list.size();i++) {
           data = list.get(i).split(",");

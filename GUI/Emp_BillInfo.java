@@ -438,61 +438,65 @@ public class Emp_BillInfo extends JPanel{
             edit.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if(!obj_b.isAccessAble(id.getText(),month.getText(),eDate.getText()))
-                    {
-                        JOptionPane.showMessageDialog(null,"Bill Not Editable","Error",JOptionPane.ERROR_MESSAGE);
-                    }
-                    else
-                    {
-                        String currentText = edit.getText();
-                        if (currentText.contains("Edit"))
+                    try {
+                        if(!obj_b.isAccessAble(id.getText(),month.getText(),eDate.getText()))
                         {
-                            edit.setText("<html><u>Update</u></html>");
-                            cmr.setFocusable(true);
-                            cmr.setEditable(true);
-                            cmrp.setFocusable(true);
-                            cmrp.setEditable(true);
-                            eCost.setFocusable(true);
-                            eCost.setEditable(true);
-                            salesTax.setFocusable(true);
-                            salesTax.setEditable(true);
-                            fCharges.setFocusable(true);
-                            fCharges.setEditable(true);
-                            total.setFocusable(true);
-                            total.setEditable(true);
-                            dueDate.setFocusable(true);
-                            dueDate.setEditable(true);
-                            pDate.setFocusable(true);
-                            pDate.setEditable(true);
+                            JOptionPane.showMessageDialog(null,"Bill Not Editable","Error",JOptionPane.ERROR_MESSAGE);
                         }
                         else
                         {
-                            cmr.setFocusable(false);
-                            cmr.setEditable(false);
-                            cmrp.setFocusable(false);
-                            cmrp.setEditable(false);
-                            eCost.setFocusable(false);
-                            eCost.setEditable(false);
-                            salesTax.setFocusable(false);
-                            salesTax.setEditable(false);
-                            fCharges.setFocusable(false);
-                            fCharges.setEditable(false);
-                            total.setFocusable(false);
-                            total.setEditable(false);
-                            dueDate.setFocusable(false);
-                            dueDate.setEditable(false);
-                            pDate.setFocusable(false);
-                            pDate.setEditable(false);
-                            edit.setText("<html><u>Edit</u></html>");
+                            String currentText = edit.getText();
+                            if (currentText.contains("Edit"))
+                            {
+                                edit.setText("<html><u>Update</u></html>");
+                                cmr.setFocusable(true);
+                                cmr.setEditable(true);
+                                cmrp.setFocusable(true);
+                                cmrp.setEditable(true);
+                                eCost.setFocusable(true);
+                                eCost.setEditable(true);
+                                salesTax.setFocusable(true);
+                                salesTax.setEditable(true);
+                                fCharges.setFocusable(true);
+                                fCharges.setEditable(true);
+                                total.setFocusable(true);
+                                total.setEditable(true);
+                                dueDate.setFocusable(true);
+                                dueDate.setEditable(true);
+                                pDate.setFocusable(true);
+                                pDate.setEditable(true);
+                            }
+                            else
+                            {
+                                cmr.setFocusable(false);
+                                cmr.setEditable(false);
+                                cmrp.setFocusable(false);
+                                cmrp.setEditable(false);
+                                eCost.setFocusable(false);
+                                eCost.setEditable(false);
+                                salesTax.setFocusable(false);
+                                salesTax.setEditable(false);
+                                fCharges.setFocusable(false);
+                                fCharges.setEditable(false);
+                                total.setFocusable(false);
+                                total.setEditable(false);
+                                dueDate.setFocusable(false);
+                                dueDate.setEditable(false);
+                                pDate.setFocusable(false);
+                                pDate.setEditable(false);
+                                edit.setText("<html><u>Edit</u></html>");
 
-                            String line = id.getText() + "," + month.getText() + "," + cmr.getText() + "," + cmrp.getText() + "," + eDate.getText() + "," + eCost.getText() + "," + salesTax.getText() + "," + fCharges.getText() + "," + total.getText() + "," + dueDate.getText() + "," + status.getText() + "," + pDate.getText();
-                            if (!obj_b.isValidEdit(line)) {
-                                showRefreshWindow("Images/Refreshequired2.png");
-                            } else {
-                                obj_b.editBill(line);
-                                showRefreshWindow("Images/Refreshequired.png");
+                                String line = id.getText() + "," + month.getText() + "," + cmr.getText() + "," + cmrp.getText() + "," + eDate.getText() + "," + eCost.getText() + "," + salesTax.getText() + "," + fCharges.getText() + "," + total.getText() + "," + dueDate.getText() + "," + status.getText() + "," + pDate.getText();
+                                if (!obj_b.isValidEdit(line)) {
+                                    showRefreshWindow("Images/Refreshequired2.png");
+                                } else {
+                                    obj_b.editBill(line);
+                                    showRefreshWindow("Images/Refreshequired.png");
+                                }
                             }
                         }
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
                 @Override
@@ -508,15 +512,23 @@ public class Emp_BillInfo extends JPanel{
             delete.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if(!obj_b.isAccessAble(id.getText(),month.getText(),eDate.getText())){
-                        JOptionPane.showMessageDialog(null,"Bill Not Deleteable","Error",JOptionPane.ERROR_MESSAGE);
-                    }
-                    else {
-                        int result = JOptionPane.showConfirmDialog(null, "Delete ID: " + id.getText() + "\nDo you want to proceed?", "Confirmation", JOptionPane.YES_NO_OPTION);
-                        if (result == JOptionPane.YES_OPTION) {
-                            obj_b.deleteBill(id.getText(), month.getText(), eDate.getText());
-                            showRefreshWindow("Images/Refreshequired.png");
+                    try {
+                        if(!obj_b.isAccessAble(id.getText(),month.getText(),eDate.getText())){
+                            JOptionPane.showMessageDialog(null,"Bill Not Deleteable","Error",JOptionPane.ERROR_MESSAGE);
                         }
+                        else {
+                            int result = JOptionPane.showConfirmDialog(null, "Delete ID: " + id.getText() + "\nDo you want to proceed?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                            if (result == JOptionPane.YES_OPTION) {
+                                try {
+                                    obj_b.deleteBill(id.getText(), month.getText(), eDate.getText());
+                                } catch (IOException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                                showRefreshWindow("Images/Refreshequired.png");
+                            }
+                        }
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
                 @Override

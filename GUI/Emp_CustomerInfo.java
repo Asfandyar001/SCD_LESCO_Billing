@@ -492,6 +492,7 @@ public class Emp_CustomerInfo extends JPanel{
                         else
                         {
                             try {
+
                                 obj_c.editCustomer(line);
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);

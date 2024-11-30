@@ -2,12 +2,14 @@ package src;
 
 import GUI.*;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Client {
     private static Client client;
@@ -67,35 +69,6 @@ public class Client {
         String response = getResponse();
         return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
     }
-
-    public ArrayList<String> viewSearchedBills(String search) throws IOException {
-        JSONObject object = new JSONObject();
-        object.put("function", "viewSearchedBills");
-        object.put("search", search);
-        output.println(object.toString());
-        String response = getResponse();
-        return new ArrayList<>(Arrays.asList(response.split(","))); // Example: Parse CSV response
-    }
-
-    public void deleteBill(String id, String month, String eDate) {
-        JSONObject object = new JSONObject();
-        object.put("function", "deleteBill");
-        object.put("id", id);
-        object.put("month", month);
-        object.put("eDate", eDate);
-        output.println(object.toString());
-    }
-
-    public boolean isAccessAble(String id, String month, String eDate) throws IOException {
-        JSONObject object = new JSONObject();
-        object.put("function", "isAccessAble");
-        object.put("id", id);
-        object.put("month", month);
-        object.put("eDate", eDate);
-        output.println(object.toString());
-        return Boolean.parseBoolean(input.readLine());
-    }
-
     public boolean isValidEdit(String row) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "isValidEdit");
@@ -104,29 +77,12 @@ public class Client {
 
         return Boolean.parseBoolean(input.readLine());
     }
-
-    public void editBill(String editedString) {
-        JSONObject object = new JSONObject();
-        object.put("function", "editBill");
-        object.put("editedString", editedString);
-        output.println(object.toString());
-    }
-
     public boolean changePaidStatus(Emp_Change_Bill_Status changeStatus) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "changePaidStatus");
         object.put("changeStatus", changeStatus.toString());
         output.println(object.toString());
         return Boolean.parseBoolean(input.readLine());
-    }
-
-    public void updateCustomerFile(String custID, String RUC, String PHUC) {
-        JSONObject object = new JSONObject();
-        object.put("function", "updateCustomerFile");
-        object.put("custID", custID);
-        object.put("RUC", RUC);
-        object.put("PHUC", PHUC);
-        output.println(object.toString());
     }
 
     public void writeFile(ArrayList<String> array, String filename) {
@@ -164,7 +120,7 @@ public class Client {
         output.println(object.toString());
         return Boolean.parseBoolean(input.readLine());
     }
-    public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException {
+    public boolean validateCustomer(String id, String cnic, String month, String year) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "validateCustomer");
         object.put("id", id);
@@ -203,13 +159,19 @@ public class Client {
         return response.split(",");
     }
     public String[] getBill(String id,String year) throws IOException {
+        System.out.println("Started");
         JSONObject object = new JSONObject();
         object.put("function", "getBill");
         object.put("id", id);
         object.put("year", year);
         output.println(object.toString());
+
         String response = input.readLine();
-        return response.split(",");
+        System.out.println("ended");
+        String[] responseArray = response.split(",");
+
+
+        return responseArray;
     }
     public  boolean updateExpiryDate(String cnic,String newdate) throws IOException {
         JSONObject object = new JSONObject();
@@ -246,7 +208,7 @@ public class Client {
         object.put("function", "isCustomerValid");
         object.put("id", id);
         object.put("cnic", cnic);
-        output.println(object.toString());
+        output.println(object);
 
         String response = getResponse();
 
@@ -296,7 +258,7 @@ public class Client {
         object.put("date", date);
         object.put("RUC", RUC);
         object.put("PHUC", PHUC);
-        output.println(object.toString());
+        output.println(object);
         return Boolean.parseBoolean(input.readLine());
     }
 
@@ -313,24 +275,35 @@ public class Client {
     public ArrayList<String> viewExpireCnic() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewExpireCnic");
-        output.println(object.toString()); // Send the request to the server
+
+        // Send the request to the server
+        output.println(object.toString());
+        output.flush(); // Ensure the output is flushed and sent immediately
 
         // Receive response
-        String response = getResponse(); // Response is a stringified JSON
+        String response = getResponse(); // Use getResponse to get the data
+
         ArrayList<String> expiredCnicList = new ArrayList<>();
 
-        try {
-            // Parse the JSON response into a JSONArray
-            JSONArray jsonArray = new JSONArray(response);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                expiredCnicList.add(jsonArray.getString(i));
+        if (response != null && !response.isEmpty()) {
+            try {
+                // Parse the JSON response into a JSONArray
+                JSONArray jsonArray = new JSONArray(response);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    expiredCnicList.add(jsonArray.getString(i));
+                }
+            } catch (Exception e) {
+                System.err.println("Error parsing JSON response: " + e.getMessage());
+                e.printStackTrace(); // Handle parsing issues
             }
-        } catch (Exception e) {
-            e.printStackTrace(); // Handle parsing issues
+        } else {
+            // Handle empty or invalid response
+            System.err.println("Received empty or invalid response: " + response);
         }
 
         return expiredCnicList;
     }
+
     public  ArrayList<String> viewAllCnic() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewAllCnic");
@@ -375,55 +348,58 @@ public class Client {
 
         return viewSearchCnic;
     }
-    public  ArrayList<String> viewSearchCustomer(String search) throws IOException {
-
+    public ArrayList<String> viewSearchCustomer(String search) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewSearchCustomer");
         object.put("search",search);
-        output.println(object.toString()); // Send the request to the server
+        output.println(object.toString());
 
-        // Receive response
-        String response = getResponse(); // Response is a stringified JSON
+        // Read the response from the server
+        String response = getResponse();
+
         ArrayList<String> viewSearchCustomer = new ArrayList<>();
 
         try {
-            // Parse the JSON response into a JSONArray
+            // Parse the response as a JSON array
             JSONArray jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 viewSearchCustomer.add(jsonArray.getString(i));
             }
-        } catch (Exception e) {
-            e.printStackTrace(); // Handle parsing issues
+        } catch (JSONException e) {
+
         }
 
         return viewSearchCustomer;
     }
 
-        public ArrayList<String> viewAllCustomers() throws IOException {
-            JSONObject object = new JSONObject();
-            object.put("function", "viewAllCustomers");
-            output.println(object.toString()); // Send the request to the server
+    public ArrayList<String> viewAllCustomers() throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "viewAllCustomers");
+        output.println(object.toString());
 
-            // Receive response
-            String response = getResponse(); // Response is a stringified JSON
-            ArrayList<String> viewAllCustomers = new ArrayList<>();
+        // Read the response from the server
+        String response = getResponse();
 
-            try {
-                // Parse the JSON response into a JSONArray
-                JSONArray jsonArray = new JSONArray(response);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    viewAllCustomers.add(jsonArray.getString(i));
-                }
-            } catch (Exception e) {
-                e.printStackTrace(); // Handle parsing issues
+        ArrayList<String> viewAllCustomers = new ArrayList<>();
+
+        try {
+            // Parse the response as a JSON array
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                viewAllCustomers.add(jsonArray.getString(i));
             }
+        } catch (JSONException e) {
 
-            return viewAllCustomers;
+        }
+
+        return viewAllCustomers;
     }
+
     public String[] getNadra(String cnic) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "getNadra");
         object.put("cnic", cnic);
+        output.println(object.toString());
         String response = input.readLine();
         return response.split(",");
     }
@@ -434,7 +410,7 @@ public class Client {
         JSONObject object = new JSONObject();
         object.put("function", "deleteCustomer");
         object.put("id", id);
-        output.println(object.toString());
+        output.println(object);
     }
 
     public boolean isVlaidEdit(String str) throws IOException {
@@ -451,14 +427,14 @@ public class Client {
         object.put("editedString", editedString);
         output.println(object.toString());
     }
-    public  int cnic_count(String cnic) throws IOException {
+    public int cnic_count(String cnic) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "cnic_count");
         object.put("cnic", cnic);
         output.println(object.toString());
         return Integer.parseInt(input.readLine());
     }
-    public  boolean searchNadraFile(String cnic) throws IOException {
+    public boolean searchNadraFile(String cnic) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "searchNadraFile");
         object.put("cnic", cnic);
@@ -478,23 +454,206 @@ public class Client {
         JSONObject object = new JSONObject();
         object.put("function", "getCustomer");
         object.put("id", id);
+
+        output.println(object);
+
         String response = input.readLine();
-        return response.split(",");
+
+        String[] responseArray = response.split(",");
+
+
+        return responseArray;
     }
-    public String[] getTax() throws IOException {
+
+    public ArrayList<String> getTax() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "getTax");
-        String response = input.readLine();
-        return response.split(",");
+        output.println(object.toString());
+
+        // Read the response from the server
+        String response = getResponse();
+
+        ArrayList<String> getTax = new ArrayList<>();
+
+        try {
+            // Parse the response as a JSON array
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                getTax.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+
+        }
+
+        return getTax;
     }
-    public boolean isUnique(String str, int index) throws IOException {
+
+
+    public boolean isUnique(String str, String index) throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "isUnique");
         object.put("str", str);
         object.put("index", index);
-        output.println(object.toString());
+        output.println(object);
         return Boolean.parseBoolean(input.readLine());
     }
-
-
+    // Add a Bill
+    public void addBill(int customerID, String currentMonth, String regularUnits, String peakUnits,
+                        String entryDate, double electricityCost, double salesTax, double fixedCharges,
+                        String dueDate, String status, String paymentDate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "addBill");
+        object.put("customerID", customerID);
+        object.put("currentMonth", currentMonth);
+        object.put("regularUnits", regularUnits);
+        object.put("peakUnits", peakUnits);
+        object.put("entryDate", entryDate);
+        object.put("electricityCost", electricityCost);
+        object.put("salesTax", salesTax);
+        object.put("fixedCharges", fixedCharges);
+        object.put("dueDate", dueDate);
+        object.put("status", status);
+        object.put("paymentDate", paymentDate);
+        output.println(object);
     }
+
+
+    public void deleteBill(String id, String month, String eDate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "deleteBill");
+        object.put("id", id);
+        object.put("month", month);
+        object.put("eDate", eDate);
+        output.println(object);
+    }
+
+    // Edit a Bill
+    public void editBill(String str) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "editBill");
+        object.put("str", str);
+        output.println(object);
+    }
+
+    // Check if Access is Allowed for a Bill
+    public boolean isAccessAble(String id, String month, String eDate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "isAccessAble");
+        object.put("id", id);
+        object.put("month", month);
+        object.put("eDate", eDate);
+        output.println(object.toString());
+
+        String response = input.readLine();
+        return Boolean.parseBoolean(response);
+    }
+
+    public void changePaidstatus(String paymentDate, String custId, String billingmonth, String eDate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "changePaidstatus");
+        object.put("paymentDate", paymentDate);
+        object.put("custId", custId);
+        object.put("billingmonth", billingmonth);
+        object.put("eDate", eDate);
+        output.println(object);
+    }
+
+    // Update Customer File
+    public void updateCustomerFile(String custId, String RUC, String PHUC) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "updateCustomerFile");
+        object.put("custId", custId);
+        object.put("RUC", RUC);
+        object.put("PHUC", PHUC);
+        output.println(object.toString());
+    }
+
+    // Get Bill for a Specific Customer
+    public String[] getBill(String id, String month, String entryDate) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getBill1");
+        object.put("id", id);
+        object.put("month", month);
+        object.put("entryDate", entryDate);
+
+        output.println(object.toString());
+        output.flush(); // Ensure the output is flushed and sent immediately
+
+        // Wait for a valid response (ensure it is not null or empty)
+        String response = getResponse(); // Use the getResponse method to fetch the data
+
+        if (response != null && !response.isEmpty()) {
+            System.out.println("Raw response: " + response); // Debugging output
+            return response.split(","); // Split the response into an array and return
+        } else {
+            // Handle error or empty response
+            System.err.println("Received empty or invalid response: " + response);
+            return new String[0]; // Return an empty array or handle the error appropriately
+        }
+    }
+
+    public ArrayList<String> getBillforAdd() throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "getBillforAdd");
+        output.println(object.toString()); // Send the request to the server
+        output.flush(); // Ensure the output is flushed and sent immediately
+
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        System.out.println("Raw response: " + response); // Debugging output
+
+        ArrayList<String> getBillforAdd = new ArrayList<>();
+
+        try {
+            // Check if the response starts with "[" (indicating a JSON array)
+            if (response != null && response.startsWith("[")) {
+                JSONArray jsonArray = new JSONArray(response);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    getBillforAdd.add(jsonArray.getString(i));
+                }
+            } else {
+                // Handle non-JSON array responses (e.g., error messages)
+                System.err.println("Unexpected response format: " + response);
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing JSON: " + e.getMessage());
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return getBillforAdd;
+    }
+
+    public ArrayList<String> viewSearchedBills(String search) throws IOException {
+        JSONObject object = new JSONObject();
+        object.put("function", "viewSearchedBills");
+        object.put("search", search);
+        output.println(object.toString()); // Send the request to the server
+
+        // Receive response
+        String response = getResponse(); // Response is a stringified JSON
+        System.out.println("Raw response: " + response); // Debugging output
+
+        ArrayList<String> viewSearchedBills = new ArrayList<>();
+
+        try {
+            if (response.startsWith("[")) {
+                // If the response starts with '[', parse it as a JSONArray
+                JSONArray jsonArray = new JSONArray(response);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    viewSearchedBills.add(jsonArray.getString(i));
+                }
+            } else {
+                // Handle non-JSON array responses (e.g., error messages)
+                System.err.println("Unexpected response format: " + response);
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing JSON: " + e.getMessage());
+            e.printStackTrace(); // Handle parsing issues
+        }
+
+        return viewSearchedBills;
+    }
+
+
+
+}

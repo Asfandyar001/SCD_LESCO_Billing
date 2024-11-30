@@ -45,8 +45,8 @@ public class DataBaseHandler {
         return CustomerModel.addCustomer(id, cnic, name, address, phone, custType, meterType, date, RUC, PHUC);
     }
 
-    public static boolean validateCustomer(String id, String cnic, String month, int year) {
-        return CustomerModel.validateCustomer(id, cnic, month, year);
+    public static boolean validateCustomer(String id, String cnic, String month, String year) {
+        return CustomerModel.validateCustomer(id, cnic, month, String.valueOf(year));
     }
 
 
@@ -93,10 +93,10 @@ public static boolean updateExpiryDate(String cnic,String newdate){
         return CustomerModel.viewBill();
     }
 
-    public static boolean isUnique(String str, int index) {
+    public static boolean isUnique(String str, String index) {
         return CustomerModel.isUnique(str, index);
     }
-    public static String[] getTax(){
+    public static ArrayList<String> getTax(){
         return TaxModel.getTaxData();
     }
     public static ArrayList<String> getData(){
@@ -134,7 +134,7 @@ public static boolean updateExpiryDate(String cnic,String newdate){
     public static void updateCustomerFile(String custId,String RUC,String phuc){
         BillingModel.updateCustomerFile(custId,RUC,phuc);
     }
-    public static String[] getBill(String id, String month, String entryDate) {
+    public static String[] getBill1(String id, String month, String entryDate) {
         return BillingModel.getBill(id,month,entryDate);
     }
 }
