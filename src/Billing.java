@@ -360,8 +360,6 @@ public class Billing
     }
 
     public boolean changePaidStatus(Emp_Change_Bill_Status changeStatus) throws IOException {
-
-
         String custID = changeStatus.getCustID();
         String billingMonth = changeStatus.getBillingMonth();
 
@@ -561,14 +559,11 @@ public class Billing
 
     public boolean validateCustomerID(String id) throws IOException {
         String[] array= Client.getInstance().getCustomer(id);
-
         if (array[0].equals(id)) {
                     arrayList = array;
                     return true;
                 }
         return false;
-
-
     }
 
     public boolean validateCustomerIDfromBillFile(String id,String month,String date) throws IOException {
@@ -579,7 +574,6 @@ public class Billing
                     billList = index;
                     return true;
                 }
-
         return false;
     }
 
