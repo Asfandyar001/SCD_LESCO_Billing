@@ -299,6 +299,7 @@ public class Customer
 
      return Client.getInstance().updateExpiryDate(cnic,newDate);
     }
+
     public ArrayList<String> viewExpireCnic() throws IOException {
        return Client.getInstance().viewExpireCnic();
         /*
@@ -400,6 +401,7 @@ public class Customer
 
 
     }
+
     public ArrayList<String> viewSearchCustomer(String search) throws IOException {
 
       return Client.getInstance().viewSearchCustomer(search);
@@ -436,11 +438,13 @@ public class Customer
 
        */
     }
+
     public void deleteCustomer(String id) throws IOException {
 
         Client.getInstance().deleteCustomer(id);
 
     }
+
     public boolean isVlaidEdit(String str){
 
         String[] data = str.trim().split(",");
@@ -472,6 +476,7 @@ public class Customer
 
         return true;
     }
+
     public void editCustomer(String editedString) throws IOException {
 
         String[] data = editedString.split(",");
@@ -615,6 +620,7 @@ public class Customer
 
         return list;
     }
+
     public void getTaxData(String custType, String phase) throws IOException {
 
             ArrayList<String> list=Client.getInstance().getTax();
@@ -642,6 +648,7 @@ public class Customer
             }
 
     }
+
     public boolean isAlphabets(String str)
     {
         for(int i=0; i<str.length();i++)
@@ -653,6 +660,7 @@ public class Customer
         }
         return true;
     }
+
     public boolean isDigits(String str)
     {
         for(int i=0; i<str.length();i++)
@@ -665,6 +673,7 @@ public class Customer
 
         return true;
     }
+
     public boolean isUnique(String str, int index) throws IOException {
        return Client.getInstance().isUnique(str, String.valueOf(index));
 

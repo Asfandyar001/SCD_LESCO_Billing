@@ -43,7 +43,6 @@ public class Billing
                 return false;
             }
 
-
             if(billingMonth.equals("Jan") || billingMonth.equals("Feb") || billingMonth.equals("Mar") || billingMonth.equals("April") || billingMonth.equals("May") || billingMonth.equals("June") || billingMonth.equals("July") || billingMonth.equals("Aug") || billingMonth.equals("Sept") || billingMonth.equals("Oct") || billingMonth.equals("Nov") || billingMonth.equals("Dec"))
             {
 
@@ -142,6 +141,7 @@ public class Billing
        // appendFile(billFilename,billData);
         return true;
     }
+
     public ArrayList<String> viewAllBills() throws IOException {
         ArrayList <String> list= Client.getInstance().getBillforAdd();
         return list;
@@ -159,6 +159,7 @@ public class Billing
 
          */
     }
+
     public ArrayList<String> viewSearchedBills(String search) throws IOException, InterruptedException {
 
         return Client.getInstance().viewSearchedBills(search);
@@ -185,6 +186,7 @@ public class Billing
 
          */
     }
+
     public void deleteBill(String id, String month, String eDate) throws IOException {
         Client.getInstance().deleteBill(id,month,eDate);
         /*
@@ -219,6 +221,7 @@ public class Billing
 
          */
     }
+
     public boolean isAccessAble(String id,String month, String eDate) throws IOException {
 
        return Client.getInstance().isAccessAble(id,month,eDate);
@@ -255,6 +258,7 @@ public class Billing
 
  */
     }
+
     public boolean isValidEdit(String row) throws IOException {
         String[] data = row.split(",");
 
@@ -321,6 +325,7 @@ public class Billing
 
         return true;
     }
+
     public void editBill(String editedString) throws IOException {
         String[] data = editedString.split(",");
 
@@ -525,38 +530,6 @@ public class Billing
 
         writeFile(array,custFilename);*/
     }
-    //no need
-    /*
-    public void writeFile(ArrayList<String> array, String filename)
-    {
-        try {
-            FileWriter fw = new FileWriter(filename);
-            BufferedWriter bw = new BufferedWriter(fw);
-
-            for (int i = 0; i < array.size(); i++) {
-                bw.write(array.get(i));
-                bw.newLine();
-            }
-            bw.close();
-        }
-        catch (IOException e)
-        {
-            System.out.println("Error: File Writing");
-        }
-    }
-
-    public void appendFile(String filename,String data)
-    {
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(filename,true))){
-            bw.write(data);
-            bw.newLine();
-        }catch(IOException e)
-        {
-            System.out.println("Error Writing to file: " + e.getMessage());
-        }
-    }
-
-     */
 
     public String[] getTaxData(String custType, String phase) throws IOException {
         String[] data = new String[]{""};
