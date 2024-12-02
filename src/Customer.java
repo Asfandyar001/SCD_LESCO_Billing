@@ -28,18 +28,14 @@ public class Customer
     private String userName;
 
     public boolean isCustomerValid(String id, String cnic) throws IOException {
-
                 boolean valid = false;
                 if(Client.getInstance().isCustomerValid(id,cnic)){
 
                    String[]data= Client.getInstance().getCustomer(id);
                     valid=true;
                     userName = data[2];
-
                 }
         return valid;
-
-
     }
 
     public String getUserName()
@@ -243,16 +239,13 @@ public class Customer
 
     }
 
-    public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException {
-
+    public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException
+    {
         boolean valid= false;
-
         String y=String.valueOf(year);
         if(Client.getInstance().validateCustomer(id,cnic,month,y))
         {
-
             custInfo = Client.getInstance().getCustomer(id);
-
             getTaxData(custInfo[5],custInfo[6]);
             valid = true;
         }
@@ -260,15 +253,11 @@ public class Customer
         if(valid)
         {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
                 String[] data=Client.getInstance().getBill(id,String.valueOf(year));
-
                 billInfo=data;
             return true;
         }
-
         return false;
-
     }
 
     public boolean updateCNIC(String id, String cnic, String newDate) throws IOException {
@@ -299,6 +288,7 @@ public class Customer
 
      return Client.getInstance().updateExpiryDate(cnic,newDate);
     }
+
     public ArrayList<String> viewExpireCnic() throws IOException {
        return Client.getInstance().viewExpireCnic();
         /*
@@ -400,6 +390,7 @@ public class Customer
 
 
     }
+
     public ArrayList<String> viewSearchCustomer(String search) throws IOException {
 
       return Client.getInstance().viewSearchCustomer(search);
@@ -436,11 +427,11 @@ public class Customer
 
        */
     }
+
     public void deleteCustomer(String id) throws IOException {
-
         Client.getInstance().deleteCustomer(id);
-
     }
+
     public boolean isVlaidEdit(String str){
 
         String[] data = str.trim().split(",");
@@ -472,6 +463,7 @@ public class Customer
 
         return true;
     }
+
     public void editCustomer(String editedString) throws IOException {
 
         String[] data = editedString.split(",");
@@ -554,14 +546,13 @@ public class Customer
     }
 
     public boolean searchNadraFile(String cnic) throws IOException {
-                if(Client.getInstance().searchNadraFile(cnic))
-                {
-                    nadraInfo=Client.getInstance().getNadra(cnic);
-                    return true;
-                }
+        if(Client.getInstance().searchNadraFile(cnic))
+        {
+            nadraInfo=Client.getInstance().getNadra(cnic);
+            return true;
+        }
         System.out.println("failed search");
         return false;
-
     }
 
     public ArrayList<String> viewBill()
@@ -615,6 +606,7 @@ public class Customer
 
         return list;
     }
+
     public void getTaxData(String custType, String phase) throws IOException {
 
             ArrayList<String> list=Client.getInstance().getTax();
@@ -640,8 +632,8 @@ public class Customer
             {
                 tariffInfo = line4.split(",");
             }
-
     }
+
     public boolean isAlphabets(String str)
     {
         for(int i=0; i<str.length();i++)
@@ -653,6 +645,7 @@ public class Customer
         }
         return true;
     }
+
     public boolean isDigits(String str)
     {
         for(int i=0; i<str.length();i++)
@@ -665,6 +658,7 @@ public class Customer
 
         return true;
     }
+
     public boolean isUnique(String str, int index) throws IOException {
        return Client.getInstance().isUnique(str, String.valueOf(index));
 
