@@ -393,7 +393,7 @@ public class Customer
 
     public ArrayList<String> viewSearchCustomer(String search) throws IOException {
 
-      return Client.getInstance().viewSearchCustomer(search);
+      return DataBaseHandler.viewSearchCustomer(search);
       /*  ArrayList<String> list = new ArrayList<>();
 
         if(search.equals("Domestic")){

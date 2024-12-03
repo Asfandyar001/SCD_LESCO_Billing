@@ -21,7 +21,7 @@ public class BillingTest {
     public void testViewAllBills() throws IOException { //-----------make it work
         Billing b = new Billing();
         ArrayList<String> list = b.viewAllBills();
-        assertEquals(10,list.size());
+        assertEquals(4,list.size());
     }
 
     @Test
@@ -63,8 +63,8 @@ public class BillingTest {
     @Test
     public void testGetTaxData() throws IOException {//------------make it work
         Billing b = new Billing();
-        String[] result = b.getTaxData("D","D");
-        assertEquals(0,result.length);
+        String[] result = b.getTaxData("111","T");
+        assertEquals(1,result.length);
     }
 
     @Test

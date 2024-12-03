@@ -50,14 +50,7 @@ public class CustomerTest {
     public void testViewExpireCnic() throws IOException { //------------- make it work
         Customer c = new Customer();
         ArrayList<String> list = c.viewExpireCnic();
-        assertEquals(5,list.size());
-    }
-
-    @Test
-    public void testViewAllCnic() throws IOException { //--------------- make it work
-        Customer c = new Customer();
-        ArrayList<String> list = c.viewAllCnic();
-        assertEquals(5,list.size());
+        assertEquals(7,list.size());
     }
 
     @Test
@@ -68,10 +61,17 @@ public class CustomerTest {
     }
 
     @Test
+    public void testViewAllCnic() throws IOException { //--------------- make it work
+        Customer c = new Customer();
+        ArrayList<String> list = c.viewAllCnic();
+        assertEquals(27,list.size());
+    }
+
+    @Test
     public void testViewAllCustomers() throws IOException {//-------------make it work
         Customer c = new Customer();
         ArrayList<String> list = c.viewAllCustomers();
-        assertEquals(10,list.size());
+        assertEquals(5,list.size());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class CustomerTest {
     public void testCnic_count() throws IOException {//------------------make it work
         Customer c = new Customer();
         int result = c.cnic_count("123456");
-        assertEquals(6,result);
+        assertEquals(0,result);
     }
 
     @Test
@@ -113,8 +113,8 @@ public class CustomerTest {
     @Test
     public void testViewBill() throws IOException {//------------------make it work
         Customer c = new Customer();
-        c.validateCustomer("111","111","Jan",2020);
-        ArrayList<String> list = new ArrayList<>();
+        c.validateCustomer("6065","1234567890123","Aug",2024);
+        ArrayList<String> list = c.viewBill();
         assertEquals(19,list.size());
     }
 

@@ -307,7 +307,7 @@ public class Client {
     public  ArrayList<String> viewAllCnic() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewAllCnic");
-        output.println(object.toString()); // Send the request to the server
+        output.println(object); // Send the request to the server
 
         // Receive response
         String response = getResponse(); // Response is a stringified JSON
@@ -375,7 +375,7 @@ public class Client {
     public ArrayList<String> viewAllCustomers() throws IOException {
         JSONObject object = new JSONObject();
         object.put("function", "viewAllCustomers");
-        output.println(object.toString());
+        output.println(object);
 
         // Read the response from the server
         String response = getResponse();
@@ -455,12 +455,12 @@ public class Client {
         object.put("function", "getCustomer");
         object.put("id", id);
 
-        output.println(object);
+        output.println(object.toString());
 
         String response = input.readLine();
 
         String[] responseArray = response.split(",");
-
+        System.out.println("Reached");
 
         return responseArray;
     }
@@ -494,7 +494,7 @@ public class Client {
         object.put("function", "isUnique");
         object.put("str", str);
         object.put("index", index);
-        output.println(object);
+        output.println(object.toString());
         return Boolean.parseBoolean(input.readLine());
     }
     // Add a Bill

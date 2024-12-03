@@ -13,19 +13,17 @@ public class TaxManagerTest {
     @Test
     public void testGetData() throws SQLException {
         TaxManager manager = new TaxManager();
-        ArrayList<String> result = manager.getData(); //it return []
+        ArrayList<String> result = manager.getData();
 
-//        ArrayList<String> expected = new ArrayList<>();
-//        expected.add("1Phase,5,,17,150");
-//        expected.add("1Phase,15,,20,250");
-//        expected.add("3Phase,8,12,17,150");
-//        expected.add("3Phase,18,25,20,250");
-//
-//        for(int i=0; i< expected.size(); i++){
-//            assertEquals(expected.get(i),result.get(i));
-//        }
+        ArrayList<String> expected = new ArrayList<>();
+        expected.add("1Phase,5,,17,150");
+        expected.add("1Phase,15,,20,250");
+        expected.add("3Phase,8,12,17,150");
+        expected.add("3Phase,18,25,20,250");
 
-        assertEquals(null,result);
+        for(int i=0; i< expected.size(); i++){
+            assertEquals(expected.get(i),result.get(i));
+        }
     }
 
     @Test
