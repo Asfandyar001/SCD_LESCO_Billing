@@ -94,8 +94,4 @@ public class TaxManager {
 
 
     }
-    public static void main(String[] args) {
-TaxManager m=new TaxManager();
-m.getData();
-    }
 }

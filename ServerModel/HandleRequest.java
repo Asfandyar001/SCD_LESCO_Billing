@@ -268,7 +268,7 @@ response=null;
 if(response!=null){
             output.println(response.toString());
         }} catch (Exception e) {
-          //  e.printStackTrace();  // Handle parsing errors or unknown functions
+            e.printStackTrace();  // Handle parsing errors or unknown functions
         }
     }
 

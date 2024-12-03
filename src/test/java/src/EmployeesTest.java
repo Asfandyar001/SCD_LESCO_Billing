@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class EmployeesTest {
 
     @Test
-    public void testValidateEmployee() throws IOException {//-----------make it work
+    public void testValidateEmployee() throws IOException {
         Employees e = new Employees();
         boolean result = e.validateEmployee("Hello","hello");
         assertEquals(false,result);
