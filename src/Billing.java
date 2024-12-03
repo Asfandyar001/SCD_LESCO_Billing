@@ -37,6 +37,7 @@ public class Billing
 
             if(validateCustomerID(custID))
             {
+
             }
             else{
                 JOptionPane.showMessageDialog(null,"Customer ID Invalid","Error",JOptionPane.ERROR_MESSAGE);
@@ -400,8 +401,9 @@ public class Billing
         String line;
         String[] data;
         boolean found = false;
-
+        System.out.println("befoe");
         ArrayList<String> list=Client.getInstance().getBillforAdd();
+        System.out.println("after");
         for(int i=0;i<list.size();i++) {
             data =list.get(i).split(",");
             if (data[0].equals(custID) && data[1].equals(billingMonth) && data[4].equals(entryDate)) {
@@ -558,7 +560,9 @@ public class Billing
     }
 
     public boolean validateCustomerID(String id) throws IOException {
-        String[] array= Client.getInstance().getCustomer(id);
+        String[] array= DataBaseHandler.getCustomer(id);
+        if(array[0]==null)
+            array[0]="null";
         if (array[0].equals(id)) {
                     arrayList = array;
                     return true;
@@ -569,7 +573,9 @@ public class Billing
     public boolean validateCustomerIDfromBillFile(String id,String month,String date) throws IOException {
         //cant sync dk why
                 String[] index = DataBaseHandler.getBill1(id,month,date);
-
+if(index==null) {
+    return false;
+}
                 if (index[0].trim().equals(id) && index[1].trim().equals(month) && index[4].trim().equals(date)) {
                     billList = index;
                     return true;

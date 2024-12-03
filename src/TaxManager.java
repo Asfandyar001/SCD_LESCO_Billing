@@ -10,6 +10,7 @@ public class TaxManager {
     private String filename = "TariffTaxInfo.txt";
 
     public ArrayList<String> getData(){
+
       return  DataBaseHandler.getData();
       /*
         ArrayList<String> list = new ArrayList<>();
@@ -92,5 +93,9 @@ public class TaxManager {
         return true;
 
 
+    }
+    public static void main(String[] args) {
+TaxManager m=new TaxManager();
+m.getData();
     }
 }

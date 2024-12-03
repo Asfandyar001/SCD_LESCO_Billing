@@ -35,7 +35,6 @@ public class HandleRequest extends Thread {
                 entertainRequest(request); // Pass JSONObject directly
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error reading input", e);
         } finally {
             try {
                 input.close();
@@ -51,7 +50,7 @@ public class HandleRequest extends Thread {
     public void entertainRequest(JSONObject jsonRequest) {
         try {
             String function = jsonRequest.getString("function");
-
+response=null;
             if (function.equalsIgnoreCase("addBill") || function.equalsIgnoreCase("viewAllBills") ||
                     function.equalsIgnoreCase("viewSearchedBills") || function.equalsIgnoreCase("deleteBill") ||
                     function.equalsIgnoreCase("isAccessAble") || function.equalsIgnoreCase("isValidEdit") ||
@@ -266,10 +265,10 @@ public class HandleRequest extends Thread {
                     // Add your logic here
                 }
             }
-
+if(response!=null){
             output.println(response.toString());
-        } catch (Exception e) {
-            e.printStackTrace();  // Handle parsing errors or unknown functions
+        }} catch (Exception e) {
+          //  e.printStackTrace();  // Handle parsing errors or unknown functions
         }
     }
 

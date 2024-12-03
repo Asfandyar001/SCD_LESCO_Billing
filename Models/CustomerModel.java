@@ -112,7 +112,7 @@ public class CustomerModel {
 
     public static String[] getCustomer(String id){
         String query = "SELECT * FROM CustomerInfo WHERE CustomerID = ?";
-
+        String[] customerDetails = new String[10];
         try (Connection conn =DataBaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -125,27 +125,28 @@ public class CustomerModel {
             // Check if a result is found
             if (rs.next()) {
                 // Retrieve details into a String array
-                String[] customerDetails = new String[]{
-                        rs.getString("CustomerID"),
-                        rs.getString("CNIC"),
-                        rs.getString("Name"),
-                        rs.getString("Address"),
-                        rs.getString("Phone"),
-                        rs.getString("CustomerType"),
-                        rs.getString("MeterType"),
-                        rs.getString("EntryDate"),
-                        rs.getString("RegularUnitsConsumed"),
-                        rs.getString("PeakHourUnitsConsumed")
-                };
-                return customerDetails;
-            }
 
-        } catch (Exception e) {
+                      customerDetails[0]=  rs.getString("CustomerID");
+                              customerDetails[1]=  rs.getString("CNIC");
+                              customerDetails[2]=  rs.getString("Name");
+                              customerDetails[3]=  rs.getString("Address");
+                              customerDetails[4]=  rs.getString("Phone");
+                              customerDetails[5]=  rs.getString("CustomerType");
+                              customerDetails[6]=  rs.getString("MeterType");
+                              customerDetails[7]=  rs.getString("EntryDate");
+                              customerDetails[8]=  rs.getString("RegularUnitsConsumed");
+                              customerDetails[9]=  rs.getString("PeakHourUnitsConsumed");
+                };
+
+            }
+        catch (Exception e) {
             e.printStackTrace();
         }
-            return null;
+            return customerDetails;
 
     }
+
+
     public static boolean validateCustomer(String id, String cnic, String month, String year) {
         boolean valid = false;
         String billQuery = "SELECT * FROM CustomerInfo WHERE CustomerID = ? AND CNIC = ?";
