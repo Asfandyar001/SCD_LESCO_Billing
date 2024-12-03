@@ -1,6 +1,5 @@
 package src;
 import GUI.Emp_TaxesInfo;
-import Models.DataBaseHandler;
 import org.junit.Test;
 
 import java.sql.SQLException;
