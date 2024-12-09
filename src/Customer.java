@@ -221,7 +221,7 @@ public class Customer
             }
         }
 
-        String data = id + "," + cnic + "," + name + "," + address + "," + phone + "," + custType + "," + meterType + "," + date + "," + RUC + "," + PHUC;
+        String data = id.trim() + "," + cnic.trim() + "," + name.trim() + "," + address.trim() + "," + phone.trim() + "," + custType.trim() + "," + meterType.trim() + "," + date.trim() + "," + RUC.trim() + "," + PHUC.trim();
           Client.getInstance().addCustomer(id,cnic,name,address,phone,custType,meterType,date,RUC,PHUC);
         /*
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(custFilename,true))) {
@@ -237,6 +237,10 @@ public class Customer
         return true;
 
 
+    }
+
+    public void setCustInfo(String[] custInfo) {
+        this.custInfo = custInfo;
     }
 
     public boolean validateCustomer(String id, String cnic, String month, int year) throws IOException

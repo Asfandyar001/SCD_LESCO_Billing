@@ -16,8 +16,8 @@ public class Client {
     private Socket socket;
     private static BufferedReader input;
     private PrintWriter output;
-    final private String IPAddress = "localhost";
-    final private int port = 1234;
+    final private String IPAddress = "103.31.104.114";
+    final private int port = 49152;
 
     private Client() throws IOException {
         socket = new Socket(IPAddress, port);
